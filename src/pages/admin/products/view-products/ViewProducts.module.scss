@@ -1,0 +1,12 @@
+.searchAndSort {
+  display: flex;
+  justify-content: right;
+}
+.productGrid {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+  gap: 20px; /* Gap between cards */
+  max-height: 90vh;
+  overflow-y: auto;
+}

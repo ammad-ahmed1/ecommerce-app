@@ -1,0 +1,87 @@
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+//pages
+import {
+  Home,
+  Contact,
+  OrderHistory,
+  Cart,
+  Login,
+  Register,
+  Reset,
+  Admin,
+} from "./pages";
+// import { Home as Dashboard } from "./components/admin-only/home/Home";
+// import { ViewProducts } from "./components/admin-only/products/view-products/ViewProducts";
+// import { AddProducts } from "./components/admin-only/products/add-products/AddProducts";
+//components
+import { Header, Footer } from "./components/index";
+import ShowOnLogin from "./components/hidden-link/HiddenLink";
+import { useSelector } from "react-redux";
+import AdminOnlyRoutes from "./components/admin-only/routes/AdminOnlyRoutes";
+import ProtectedRoutes from "./routes/ProtectedRoutes";
+
+function App() {
+  const loc = window.location.pathname;
+  console.log(loc);
+  return (
+    <div style={{ margin: "20px" }}>
+      <BrowserRouter>
+        <ToastContainer />
+        {/* <ShowOnLogin> */}
+        {loc === "/login" ||
+          loc === "/register" ||
+          (loc === "reset-password" && <Header />)}
+
+        {/* </ShowOnLogin> */}
+
+        <Routes>
+          {/* <Route
+            path="/*"
+            element={
+              // <ProtectedRoutes>
+                <Home />
+              // </ProtectedRoutes>
+            }
+          /> */}
+          <Route
+            path="/"
+            element={
+              // <ProtectedRoutes>
+              <Home />
+              // </ProtectedRoutes>
+            }
+          />
+          <Route
+            path="/contacts"
+            element={
+              // <ProtectedRoutes>
+              <Contact />
+              // </ProtectedRoutes>
+            }
+          />
+
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/reset-password" element={<Reset />} />
+          <Route
+            path="/admin/*"
+            element={
+              <ProtectedRoutes>
+                <AdminOnlyRoutes>
+                  <Admin />
+                </AdminOnlyRoutes>
+              </ProtectedRoutes>
+            }
+          />
+        </Routes>
+        {loc === "/login" ||
+          loc === "/register" ||
+          (loc === "reset-password" && <Footer />)}
+      </BrowserRouter>
+    </div>
+  );
+}
+
+export default App;

@@ -1,0 +1,122 @@
+.container {
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+
+.flexContainer {
+  display: flex;
+  align-items: center;
+  box-shadow: 8px 8px 8px 8px rgba(0, 0, 0, 0.2); /* Add box shadow */
+}
+.heading,
+.text {
+  display: flex;
+  justify-content: center;
+  color: #635151;
+}
+.grid {
+  flex: 1;
+  //margin: 10px;
+  max-width: 280px;
+  //   height: 400px;
+}
+.btnGrid {
+  display: flex;
+  justify-content: space-around;
+}
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+// form
+.form {
+  //max-width: 400px;
+  margin: 0 auto;
+  padding: 15px;
+  // border: 1px solid #ccc;
+}
+
+.socialContainer {
+  display: flex;
+  //justify-content: space-around;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.social {
+  text-decoration: none;
+  color: #fff;
+  //background-color: #3b5998;
+  padding: 10px;
+  border-radius: 12px;
+  transition: background-color 0.3s;
+}
+
+.social:hover {
+  background-color: #305185;
+}
+
+span {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.input {
+  width: 95%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+a {
+  text-decoration: none;
+  color: #3498db;
+}
+
+a:hover {
+  color: #2073b3;
+}
+
+.btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #2073b3;
+}
+.radios {
+  display: flex;
+  justify-content: center;
+}
+@media only screen and (max-width: 650px) {
+  #dskImg {
+    display: none;
+  }
+  .container {
+    height: auto; /* or set a specific height that suits your design */
+  }
+
+  .flexContainer {
+    flex-direction: column; /* stack items vertically on smaller screens */
+  }
+
+  .grid {
+    max-width: 100%; /* adjust the width as needed */
+  }
+
+  .form {
+    padding: 10px; /* adjust padding as needed */
+  }
+}
