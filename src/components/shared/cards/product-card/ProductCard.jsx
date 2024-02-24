@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./ProductCard.module.scss";
 import { useNavigate } from "react-router-dom";
+import AdminOnlyRoutes from "../../../admin-only/routes/AdminOnlyRoutes";
 const ProductCard = ({ product, del }) => {
   const deleteBox = (
     <div>
@@ -43,16 +44,22 @@ const ProductCard = ({ product, del }) => {
           className={styles.productImage}
           src={product?.images}
           alt="Product Image"
+          onClick={(e) => {
+            navigate(`/product-detail/${product?.id}`);
+          }}
         />
         <div className={styles.productInfo}>
           <div className={styles.productTitle}>{product?.name}</div>
           <div className={styles.productPrice}>{product?.price}</div>
           <div className={styles.productBrand}>{product?.brand}</div>
         </div>
-        <div className={styles.btnGroup}>
-          <button className={styles.btn}>Edit</button>
-          <button className={styles.btn}>Delete</button>
-        </div>
+        <AdminOnlyRoutes>
+          <div className={styles.btnGroup}>
+            <button className={styles.btn}>Edit</button>
+            <button className={styles.btn}>Delete</button>
+          </div>
+        </AdminOnlyRoutes>
+
         <button
           className={styles.btn}
           style={{ margin: "0 auto", display: "block" }}

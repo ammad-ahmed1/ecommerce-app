@@ -23,6 +23,8 @@ import ProtectedRoutes from "./routes/ProtectedRoutes";
 import { useEffect, useState } from "react";
 import Sidebar from "./components/admin-only/sidebar/Sidebar";
 import Orders from "./pages/admin/orders/Orders";
+import ProductDetail from "./pages/product-detail/ProductDetail";
+import ClientSidebar from "./components/shared/sidebar/ClientSidebar";
 // import AddProductForm from "./pages/admin/products/add-products/AddProductForm";
 function AdminLayout({ children }) {
   // You can customize the sidebar here
@@ -38,7 +40,20 @@ function AdminLayout({ children }) {
     </div>
   );
 }
+function UserLayout({ children }) {
+  // You can customize the sidebar here
+  const clientSidebar = <ClientSidebar />;
 
+  return (
+    <div style={{ display: "flex" }}>
+      {clientSidebar}
+      <div style={{ flex: 1, padding: "20px" }}>
+        {/* Content on the right side */}
+        {children}
+      </div>
+    </div>
+  );
+}
 function App() {
   const [isShowHeaderAndFooter, setIsShowHeaderAndFooter] = useState(false);
   const location = useLocation();
@@ -59,11 +74,41 @@ function App() {
       <ToastContainer />
       {isShowHeaderAndFooter && <Header />}
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/contacts" element={<Contact />} />
+        <Route
+          path="/"
+          element={
+            <UserLayout>
+              <Home />
+            </UserLayout>
+          }
+        />
+        <Route
+          path="/contacts"
+          element={
+            <UserLayout>
+              <Contact />
+            </UserLayout>
+          }
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/reset-password" element={<Reset />} />
+        <Route
+          path="/view-products"
+          element={
+            <UserLayout>
+              <ViewProducts />
+            </UserLayout>
+          }
+        />
+        <Route
+          path="/product-detail/:id"
+          element={
+            <UserLayout>
+              <ProductDetail />
+            </UserLayout>
+          }
+        />
         <Route
           path="/admin/*"
           element={

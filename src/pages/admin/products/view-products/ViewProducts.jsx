@@ -21,11 +21,15 @@ import {
 import useFetchCollection from "../../../../custom-hooks/useFetchCollection/useFetchCollection";
 import Search from "../../../../components/shared/search/Search";
 import Sort from "../../../../components/shared/sort/Sort";
+import Loader from "../../../../components/shared/loader/Loader";
 const ViewProducts = () => {
+  //--------------hooks--------------
   const { data, isHookLoading } = useFetchCollection("product");
-
   const dispatch = useDispatch();
   const products = useSelector(selectProducts);
+  //--------------states-------------
+  const [search, setSearch] = useState("");
+  //------------functions------------
   const deleteProduct = async (id, imageURL) => {
     try {
       await deleteDoc(doc(db, "product", id));
@@ -36,6 +40,7 @@ const ViewProducts = () => {
       toast.error(error.message);
     }
   };
+  //--------------effects-------------
   useEffect(() => {
     dispatch(
       STORE_PRODUCTS({
@@ -47,14 +52,22 @@ const ViewProducts = () => {
   return (
     <>
       <div className={styles.searchAndSort}>
-        <Search />
+        <Search value={search} onChange={(e) => setSearch(e.target.value)} />
         <Sort />
       </div>
-      <div className={styles.productGrid}>
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} del={deleteProduct} />
-        ))}
-      </div>
+      {isHookLoading ? (
+        <Loader />
+      ) : (
+        <div className={styles.productGrid}>
+          {products.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              del={deleteProduct}
+            />
+          ))}
+        </div>
+      )}
     </>
   );
 };
