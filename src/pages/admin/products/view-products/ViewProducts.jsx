@@ -23,7 +23,7 @@ import Search from "../../../../components/shared/search/Search";
 import Sort from "../../../../components/shared/sort/Sort";
 const ViewProducts = () => {
   const { data, isHookLoading } = useFetchCollection("product");
-  console.log(data, "......................................hook data");
+
   const dispatch = useDispatch();
   const products = useSelector(selectProducts);
   const deleteProduct = async (id, imageURL) => {

@@ -47,13 +47,9 @@ const AddProductForm = () => {
   const storage = getStorage();
   const products = useSelector(selectProducts);
   const detectForm = (id, f1, f2) => {
-    console.log("detect form called");
-    console.log(id, "..........id is");
     if (id === undefined) {
-      console.log("add");
       return f1;
     }
-    console.log("edit");
     return f2;
   };
   const productEdit = products.find((item) => {

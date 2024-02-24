@@ -36,7 +36,7 @@ const Reset = () => {
             <div className={styles.flexContainer}>
               <div className={styles.grid} id={styles.dskImg}>
                 <div className={styles.content}>
-                  <img src={"/public/auth/login-img.avif"} width="100%" />
+                  <img src={"/auth/login-img.avif"} width="100%" />
                 </div>
               </div>
               <div className={styles.grid}>
@@ -45,21 +45,7 @@ const Reset = () => {
                     <span className={styles.heading}>
                       <h1>Reset</h1>
                     </span>
-                    {/* <div className={styles.socialContainer}>
-                  <a href="#" className={styles.social}>
-                    <img
-                      src="/public/auth/gmail.png"
-                      // width="20px"
-                      // height="20px"
-                    />
-                  </a>
-                  <a href="#" className={styles.social}>
-                    <img
-                      src="/public/auth/fb.png"
-                      //   width="20px" height="20px"
-                    />
-                  </a>
-                </div> */}
+
                     <span className={styles.text}>
                       Type your email for recovery
                     </span>

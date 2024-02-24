@@ -104,12 +104,9 @@ const Header = () => {
         <div className={styles.right}>
           <button className={styles.toggleBtn} onClick={toggleMenu}>
             {!showMenu ? (
-              <img src="../../../public/icons/hamburger-icon.png" />
+              <img src="../../../icons/hamburger-icon.png" />
             ) : (
-              <img
-                src="../../../public/icons/x-icon.png"
-                className={styles.x}
-              />
+              <img src="../../../icons/x-icon.png" className={styles.x} />
             )}
           </button>
         </div>

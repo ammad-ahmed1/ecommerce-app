@@ -154,7 +154,7 @@ const Login = () => {
           <div className={styles.flexContainer}>
             <div className={styles.grid} id={styles.dskImg}>
               <div className={styles.content}>
-                <img src={"/public/auth/1.jpg"} width="100%" />
+                <img src={"/auth/1.jpg"} width="100%" />
               </div>
             </div>
             <div className={styles.grid}>
@@ -167,7 +167,7 @@ const Login = () => {
                   <div className={styles.socialContainer}>
                     <a href="#" className={styles.social}>
                       <img
-                        src="/public/auth/gmail.png"
+                        src="/auth/gmail.png"
                         // width="20px"
                         // height="20px"
 
@@ -176,7 +176,7 @@ const Login = () => {
                     </a>
                     <a href="#" className={styles.social}>
                       <img
-                        src="/public/auth/fb.png"
+                        src="/auth/fb.png"
                         //   width="20px" height="20px"
                       />
                     </a>

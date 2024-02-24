@@ -24,7 +24,6 @@ const useFetchCollection = (collectionName) => {
           id: doc.id,
           ...doc.data(),
         }));
-        console.log(allData, "............data in custom hook");
         setData(allData);
         setIsHookLoading(false);
       });

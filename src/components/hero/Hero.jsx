@@ -5,10 +5,7 @@ const Hero = () => {
     <section>
       {" "}
       <div className={styles.container}>
-        <img
-          src="../../../public/hero/hero-img.jpg"
-          className={styles.heroImg}
-        />
+        <img src="../../../hero/hero-img.jpg" className={styles.heroImg} />
         <div className={styles.leftTop}>
           <span className={styles.heroHeading}>The Best</span>
         </div>
