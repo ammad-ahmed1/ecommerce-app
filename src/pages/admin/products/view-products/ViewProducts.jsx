@@ -18,17 +18,25 @@ import {
   STORE_PRODUCTS,
   selectProducts,
 } from "../../../../redux/slice/productSlice";
+import {
+  FILTER_BY_SEARCH,
+  selectFilteredProducts,
+  SORT_PRODUCTS,
+} from "../../../../redux/slice/filterSlice";
 import useFetchCollection from "../../../../custom-hooks/useFetchCollection/useFetchCollection";
 import Search from "../../../../components/shared/search/Search";
 import Sort from "../../../../components/shared/sort/Sort";
 import Loader from "../../../../components/shared/loader/Loader";
+
 const ViewProducts = () => {
   //--------------hooks--------------
   const { data, isHookLoading } = useFetchCollection("product");
+  const filteredProducts = useSelector(selectFilteredProducts);
   const dispatch = useDispatch();
   const products = useSelector(selectProducts);
   //--------------states-------------
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("lateset");
   //------------functions------------
   const deleteProduct = async (id, imageURL) => {
     try {
@@ -48,18 +56,25 @@ const ViewProducts = () => {
       })
     );
   }, [dispatch, data]);
-
+  // ---------------------------------
+  useEffect(() => {
+    dispatch(FILTER_BY_SEARCH({ products: products, search: search }));
+  }, [search, dispatch, products]);
+  // ---------------------------------
+  useEffect(() => {
+    dispatch(SORT_PRODUCTS({ products: products, sort: sort }));
+  }, [sort, dispatch, products]);
   return (
     <>
       <div className={styles.searchAndSort}>
         <Search value={search} onChange={(e) => setSearch(e.target.value)} />
-        <Sort />
+        <Sort sort={sort} setSort={setSort} />
       </div>
       {isHookLoading ? (
         <Loader />
       ) : (
         <div className={styles.productGrid}>
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <ProductCard
               key={product.id}
               product={product}

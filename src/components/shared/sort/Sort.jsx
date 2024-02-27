@@ -1,9 +1,9 @@
 import React from "react";
 import styles from "./Sort.module.scss";
 
-const Sort = ({ handleSort }) => {
+const Sort = ({ sort, setSort }) => {
   const handleChange = (e) => {
-    handleSort(e.target.value);
+    setSort(e.target.value);
   };
 
   return (
