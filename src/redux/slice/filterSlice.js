@@ -37,9 +37,29 @@ const filterSlice = createSlice({
       }
       state.filteredProducts = tempProducts;
     },
+    FILTER_BY_CATEGORY(state, action) {
+      const { products, category } = action.payload;
+      const tempProducts = products.filter((product) => {
+        return product?.category.toLowerCase() === category.toLowerCase();
+      });
+      state.filteredProducts = tempProducts;
+    },
+    FILTER_BY_PRICE(state, action) {
+      const { products, minPrice, maxPrice } = action.payload;
+      const tempProducts = products.filter((product) => {
+        return product?.price >= minPrice && product?.price <= maxPrice;
+      });
+      console.log(tempProducts);
+      state.filteredProducts = tempProducts;
+    },
   },
 });
 
-export const { FILTER_BY_SEARCH, SORT_PRODUCTS } = filterSlice.actions;
+export const {
+  FILTER_BY_SEARCH,
+  SORT_PRODUCTS,
+  FILTER_BY_CATEGORY,
+  FILTER_BY_PRICE,
+} = filterSlice.actions;
 export const selectFilteredProducts = (state) => state.filter.filteredProducts;
 export default filterSlice.reducer;

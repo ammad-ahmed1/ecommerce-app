@@ -27,6 +27,7 @@ import useFetchCollection from "../../../../custom-hooks/useFetchCollection/useF
 import Search from "../../../../components/shared/search/Search";
 import Sort from "../../../../components/shared/sort/Sort";
 import Loader from "../../../../components/shared/loader/Loader";
+import ClientSidebar from "../../../../components/shared/sidebar/ClientSidebar";
 
 const ViewProducts = () => {
   //--------------hooks--------------
@@ -36,7 +37,9 @@ const ViewProducts = () => {
   const products = useSelector(selectProducts);
   //--------------states-------------
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("lateset");
+  const [catFilter, setCatFilter] = useState("");
+  const [priceFilter, setPriceFilter] = useState("");
+  const [sort, setSort] = useState("latest");
   //------------functions------------
   const deleteProduct = async (id, imageURL) => {
     try {
@@ -55,6 +58,7 @@ const ViewProducts = () => {
         products: data,
       })
     );
+    //dispatch, data
   }, [dispatch, data]);
   // ---------------------------------
   useEffect(() => {
@@ -66,23 +70,44 @@ const ViewProducts = () => {
   }, [sort, dispatch, products]);
   return (
     <>
-      <div className={styles.searchAndSort}>
-        <Search value={search} onChange={(e) => setSearch(e.target.value)} />
-        <Sort sort={sort} setSort={setSort} />
-      </div>
-      {isHookLoading ? (
-        <Loader />
-      ) : (
-        <div className={styles.productGrid}>
-          {filteredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              del={deleteProduct}
+      <div style={{ display: "flex" }}>
+        <ClientSidebar
+          catFilter={catFilter}
+          setCatFilter={setCatFilter}
+          priceFilter={priceFilter}
+          setPriceFilter={setPriceFilter}
+        />
+        <div>
+          <div className={styles.searchAndSort}>
+            <Search
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
-          ))}
+            <Sort sort={sort} setSort={setSort} />
+          </div>
+          {isHookLoading ? (
+            <Loader />
+          ) : (
+            <div className={styles.productGrid}>
+              {search || catFilter || priceFilter
+                ? filteredProducts?.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      del={deleteProduct}
+                    />
+                  ))
+                : data?.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      del={deleteProduct}
+                    />
+                  ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </>
   );
 };

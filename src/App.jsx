@@ -46,7 +46,7 @@ function UserLayout({ children }) {
 
   return (
     <div style={{ display: "flex" }}>
-      {clientSidebar}
+      {/* {clientSidebar} */}
       <div style={{ flex: 1, padding: "20px" }}>
         {/* Content on the right side */}
         {children}
