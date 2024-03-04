@@ -28,19 +28,30 @@ import Search from "../../../../components/shared/search/Search";
 import Sort from "../../../../components/shared/sort/Sort";
 import Loader from "../../../../components/shared/loader/Loader";
 import ClientSidebar from "../../../../components/shared/sidebar/ClientSidebar";
+import Pagination from "../../../../components/shared/pagination/Pagination";
 
 const ViewProducts = () => {
-  //--------------hooks--------------
-  const { data, isHookLoading } = useFetchCollection("product");
-  const filteredProducts = useSelector(selectFilteredProducts);
-  const dispatch = useDispatch();
-  const products = useSelector(selectProducts);
   //--------------states-------------
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState("");
   const [priceFilter, setPriceFilter] = useState("");
   const [sort, setSort] = useState("latest");
+  const [page, setPage] = useState(1);
+  const pageSize = 3;
+  //--------------hooks--------------
+  const { data, isHookLoading, totalProducts } = useFetchCollection(
+    "product",
+    page,
+    pageSize
+  );
+  const filteredProducts = useSelector(selectFilteredProducts);
+  const dispatch = useDispatch();
+  const products = useSelector(selectProducts);
+
   //------------functions------------
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
   const deleteProduct = async (id, imageURL) => {
     try {
       await deleteDoc(doc(db, "product", id));
@@ -88,22 +99,29 @@ const ViewProducts = () => {
           {isHookLoading ? (
             <Loader />
           ) : (
-            <div className={styles.productGrid}>
-              {search || catFilter || priceFilter
-                ? filteredProducts?.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      del={deleteProduct}
-                    />
-                  ))
-                : data?.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      del={deleteProduct}
-                    />
-                  ))}
+            <div>
+              <div className={styles.productGrid}>
+                {search || catFilter || priceFilter
+                  ? filteredProducts?.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        del={deleteProduct}
+                      />
+                    ))
+                  : data?.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        del={deleteProduct}
+                      />
+                    ))}
+              </div>
+              <Pagination
+                currentPage={page}
+                totalPages={Math.ceil(totalProducts / pageSize)}
+                onPageChange={handlePageChange}
+              />
             </div>
           )}
         </div>

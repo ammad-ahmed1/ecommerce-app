@@ -26,7 +26,7 @@ const categories = [
   {
     id: 1,
     name: "Electronics",
-    subcategories: ["Mobile Phones", "Laptops", "Tablets", "Cameras"],
+    subcategories: ["LCD", "Fridge", "Microwave Oven", "Cameras"],
   },
   {
     id: 2,
@@ -37,6 +37,16 @@ const categories = [
     id: 3,
     name: "Home & Furniture",
     subcategories: ["Furniture", "Home Decor", "Kitchenware", "Bedding"],
+  },
+  {
+    id: 4,
+    name: "Laptop",
+    subcategories: ["5th gen", "7th gen", "8th gen", "11th gen"],
+  },
+  {
+    id: 5,
+    name: "Phone",
+    subcategories: ["4/32", "4/64", "4/128", "8/128"],
   },
   // Add more categories
 ];
