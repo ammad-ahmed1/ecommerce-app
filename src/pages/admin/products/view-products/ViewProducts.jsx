@@ -23,6 +23,10 @@ import {
   selectFilteredProducts,
   SORT_PRODUCTS,
 } from "../../../../redux/slice/filterSlice";
+import {
+  ADD_TO_CART,
+  DECREASE_FROM_CART,
+} from "../../../../redux/slice/cartSlice";
 import useFetchCollection from "../../../../custom-hooks/useFetchCollection/useFetchCollection";
 import Search from "../../../../components/shared/search/Search";
 import Sort from "../../../../components/shared/sort/Sort";
@@ -61,6 +65,10 @@ const ViewProducts = () => {
     } catch (error) {
       toast.error(error.message);
     }
+  };
+  const addToCart = (id, price) => {
+    console.log("Adding this product in cart", id, " : ", price);
+    dispatch(ADD_TO_CART(id, price));
   };
   //--------------effects-------------
   useEffect(() => {
@@ -107,6 +115,7 @@ const ViewProducts = () => {
                         key={product.id}
                         product={product}
                         del={deleteProduct}
+                        addToCart={addToCart}
                       />
                     ))
                   : data?.map((product) => (
@@ -114,6 +123,7 @@ const ViewProducts = () => {
                         key={product.id}
                         product={product}
                         del={deleteProduct}
+                        addToCart={addToCart}
                       />
                     ))}
               </div>

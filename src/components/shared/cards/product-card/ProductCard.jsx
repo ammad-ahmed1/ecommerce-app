@@ -2,32 +2,7 @@ import React from "react";
 import styles from "./ProductCard.module.scss";
 import { useNavigate } from "react-router-dom";
 import AdminOnlyRoutes from "../../../admin-only/routes/AdminOnlyRoutes";
-const ProductCard = ({ product, del }) => {
-  const deleteBox = (
-    <div>
-      <p>Are you sure you want to delete it?</p>
-      <div style={{ display: "flex", width: "100%", justifyContent: "right" }}>
-        <div>
-          <button
-            style={{ background: "red", color: "white", borderRadius: "12px" }}
-          >
-            Yes
-          </button>
-        </div>
-        <div style={{ marginLeft: "15px" }}>
-          <button
-            style={{
-              background: "yellow",
-              color: "white",
-              borderRadius: "12px",
-            }}
-          >
-            No
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+const ProductCard = ({ product, del, addToCart }) => {
   const navigate = useNavigate();
   const handleDelete = (product) => {
     console.log(product);
@@ -63,6 +38,7 @@ const ProductCard = ({ product, del }) => {
         <button
           className={styles.btn}
           style={{ margin: "0 auto", display: "block" }}
+          onClick={(e) => addToCart(product?.id, product?.price)}
         >
           Add to Cart
         </button>
