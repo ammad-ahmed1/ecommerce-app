@@ -6,7 +6,6 @@ import {
   Home,
   Contact,
   OrderHistory,
-  Cart,
   Login,
   Register,
   Reset,
@@ -14,6 +13,7 @@ import {
   AdminDashboard,
   AddProductForm,
   ViewProducts,
+  Cart,
 } from "./pages";
 import { Header, Footer } from "./components/index";
 import ShowOnLogin from "./components/hidden-link/HiddenLink";
@@ -25,6 +25,7 @@ import Sidebar from "./components/admin-only/sidebar/Sidebar";
 import Orders from "./pages/admin/orders/Orders";
 import ProductDetail from "./pages/product-detail/ProductDetail";
 import ClientSidebar from "./components/shared/sidebar/ClientSidebar";
+
 // import AddProductForm from "./pages/admin/products/add-products/AddProductForm";
 function AdminLayout({ children }) {
   // You can customize the sidebar here
@@ -101,6 +102,15 @@ function App() {
             </UserLayout>
           }
         />
+        <Route
+          path="cart"
+          element={
+            <UserLayout>
+              <Cart />
+            </UserLayout>
+          }
+        />
+
         <Route
           path="/product-detail/:id"
           element={

@@ -1,15 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./ViewProducts.module.scss";
 import { db, storage } from "../../../../firebase/config";
-import {
-  collection,
-  limit,
-  onSnapshot,
-  orderBy,
-  query,
-  doc,
-  deleteDoc,
-} from "firebase/firestore";
+import { doc, deleteDoc } from "firebase/firestore";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify"; // Import the toast library
 import ProductCard from "../../../../components/shared/cards/product-card/ProductCard";
@@ -23,10 +15,7 @@ import {
   selectFilteredProducts,
   SORT_PRODUCTS,
 } from "../../../../redux/slice/filterSlice";
-import {
-  ADD_TO_CART,
-  DECREASE_FROM_CART,
-} from "../../../../redux/slice/cartSlice";
+import { ADD_TO_CART } from "../../../../redux/slice/cartSlice";
 import useFetchCollection from "../../../../custom-hooks/useFetchCollection/useFetchCollection";
 import Search from "../../../../components/shared/search/Search";
 import Sort from "../../../../components/shared/sort/Sort";
@@ -66,10 +55,7 @@ const ViewProducts = () => {
       toast.error(error.message);
     }
   };
-  const addToCart = (id, price) => {
-    console.log("Adding this product in cart", id, " : ", price);
-    dispatch(ADD_TO_CART(id, price));
-  };
+
   //--------------effects-------------
   useEffect(() => {
     dispatch(
@@ -115,7 +101,6 @@ const ViewProducts = () => {
                         key={product.id}
                         product={product}
                         del={deleteProduct}
-                        addToCart={addToCart}
                       />
                     ))
                   : data?.map((product) => (
@@ -123,7 +108,6 @@ const ViewProducts = () => {
                         key={product.id}
                         product={product}
                         del={deleteProduct}
-                        addToCart={addToCart}
                       />
                     ))}
               </div>

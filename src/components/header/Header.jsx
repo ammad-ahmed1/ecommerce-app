@@ -88,6 +88,9 @@ const Header = () => {
           <Link to="/contact" className={styles.nav}>
             Contact Us
           </Link>
+          <Link to="/cart" className={styles.nav}>
+            <img src="/icons/cart-icon.png" />
+          </Link>
           <div className={styles.logoutBtnContainer}>
             <ShowOnLogin>
               <button className={styles.logoutBtn} onClick={logoutUser}>

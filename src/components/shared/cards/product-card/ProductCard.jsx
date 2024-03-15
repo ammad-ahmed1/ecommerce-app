@@ -2,8 +2,17 @@ import React from "react";
 import styles from "./ProductCard.module.scss";
 import { useNavigate } from "react-router-dom";
 import AdminOnlyRoutes from "../../../admin-only/routes/AdminOnlyRoutes";
-const ProductCard = ({ product, del, addToCart }) => {
+import { useSelector, useDispatch } from "react-redux";
+import { ADD_TO_CART } from "../../../../redux/slice/cartSlice";
+const ProductCard = ({ product, del }) => {
+  // ----------hooks-----------
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  //const products = useSelector(selectProducts);
+  //---------functions---------
+  const addToCart = (product) => {
+    dispatch(ADD_TO_CART(product));
+  };
   const handleDelete = (product) => {
     console.log(product);
     // alert(deleteBox);
@@ -38,7 +47,9 @@ const ProductCard = ({ product, del, addToCart }) => {
         <button
           className={styles.btn}
           style={{ margin: "0 auto", display: "block" }}
-          onClick={(e) => addToCart(product?.id, product?.price)}
+          onClick={(e) => {
+            addToCart(product);
+          }}
         >
           Add to Cart
         </button>

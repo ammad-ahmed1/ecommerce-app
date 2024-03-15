@@ -1,0 +1,41 @@
+.totalBillCardDiv {
+  display: flex;
+  justify-content: right;
+  width: 300px;
+  align-items: right;
+}
+.totalBillCard {
+  background-color: #fff;
+  width: 300px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.continueShoppingBtn,
+.checkoutBtn {
+  display: block;
+  width: 100%;
+  padding: 10px 5px;
+  background-color: transparent; /* Set background color to transparent */
+  color: #000;
+  text-align: center;
+  text-decoration: none;
+  border: 1px solid #000; /* Black border */
+  border-radius: 2px;
+  cursor: pointer;
+  margin-bottom: 20px; /* Adjust spacing as needed */
+}
+
+.checkoutBtn {
+  margin-bottom: 0; /* Remove bottom margin for the last button */
+}
+
+.continueShoppingBtn:hover,
+.checkoutBtn:hover {
+  background-color: #f4f4f4; /* Background color on hover */
+}
