@@ -17,6 +17,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const provider = new GoogleAuthProvider();
   // const auth = getAuth();
+  console.log(loc, "................loc");
   const [formData, setFormData] = useState({
     email: "",
     psw: "",
@@ -77,9 +78,18 @@ const Login = () => {
           userID: user?.userID,
         };
         // dispatch(SET_ACTIVE_USER(userData));
-        toast.success("Hello there!");
+
+        if (loc.includes("/cart")) {
+          toast.success("Checkout now!");
+        } else {
+          toast.success("Hello there!");
+        }
         setTimeout(() => {
-          navigate("/");
+          if (loc.includes("/cart")) {
+            navigate("/cart");
+          } else {
+            navigate("/");
+          }
         }, 1000);
         // IdP data available using getAdditionalUserInfo(result)
         // ...
@@ -129,7 +139,18 @@ const Login = () => {
           };
           // dispatch(SET_ACTIVE_USER(userData));
           setIsLoading(false);
-          navigate("/");
+          if (loc.includes("/cart")) {
+            toast.success("Checkout now!");
+          } else {
+            toast.success("Hello there!");
+          }
+          setTimeout(() => {
+            if (loc.includes("/cart")) {
+              navigate("/cart");
+            } else {
+              navigate("/");
+            }
+          }, 1000);
         })
         .catch((error) => {
           const errorCode = error.code;

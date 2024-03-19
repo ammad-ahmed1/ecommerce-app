@@ -25,6 +25,7 @@ import Sidebar from "./components/admin-only/sidebar/Sidebar";
 import Orders from "./pages/admin/orders/Orders";
 import ProductDetail from "./pages/product-detail/ProductDetail";
 import ClientSidebar from "./components/shared/sidebar/ClientSidebar";
+import CheckoutForm from "./pages/checkout/checkout-form/CheckoutForm";
 
 // import AddProductForm from "./pages/admin/products/add-products/AddProductForm";
 function AdminLayout({ children }) {
@@ -62,6 +63,7 @@ function App() {
     const loc = window.location.pathname;
     if (
       location?.pathname === "/login" ||
+      location?.pathname === "/login/cart" ||
       location?.pathname === "/register" ||
       location?.pathname === "/reset-password"
     ) {
@@ -92,6 +94,7 @@ function App() {
           }
         />
         <Route path="/login" element={<Login />} />
+        <Route path="/login/cart" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/reset-password" element={<Reset />} />
         <Route
@@ -110,7 +113,14 @@ function App() {
             </UserLayout>
           }
         />
-
+        <Route
+          path="checkout"
+          element={
+            <UserLayout>
+              <CheckoutForm />
+            </UserLayout>
+          }
+        />
         <Route
           path="/product-detail/:id"
           element={

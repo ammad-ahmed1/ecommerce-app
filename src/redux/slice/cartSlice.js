@@ -7,6 +7,7 @@ const initialState = {
     : [],
   cartTotalQuantity: 0,
   cartTotalAmount: 0,
+  previousURL: null,
 };
 const cartSlice = createSlice({
   name: "cart",
@@ -19,11 +20,9 @@ const cartSlice = createSlice({
         const cartItemAmout = price * cartQuantity;
         return array.push(cartItemAmout);
       });
-      console.log(array);
       const totalAmount = array.reduce((a, b) => {
         return a + b;
       });
-      console.log(totalAmount);
       state.cartTotalAmount = totalAmount;
     },
     ADD_TO_CART: (state, action) => {
@@ -68,7 +67,7 @@ const cartSlice = createSlice({
           state.cartItems[productIndex].subTotal =
             state.cartItems[productIndex].cartQuantity *
             state.cartItems[productIndex].price;
-          toast.success(`${action.payload.name} decreased from cart`, {
+          toast.dark(`${action.payload.name} decreased from cart`, {
             position: "top-left",
           });
         } else {
@@ -109,6 +108,13 @@ const cartSlice = createSlice({
       //save cart to local storage
       localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
     },
+    SET_PREVIOUS_URL: (state, action) => {
+      console.log(action.payload);
+      // state.previousURL = action.payload;
+    },
+    CLEAR_PREVIOUS_URL: (state) => {
+      // state.previousURL = null;
+    },
   },
 });
 
@@ -117,8 +123,11 @@ export const {
   DEACREASE_FROM_CART,
   REMOVE_FROM_CART,
   TOTAL_BILL,
+  SET_PREVIOUS_URL,
+  CLEAR_PREVIOUS_URL,
 } = cartSlice.actions;
 export const selectCartItems = (state) => state.cart.cartItems;
 export const selectCartTotalQuantity = (state) => state.cart.cartTotalQuantity;
 export const selectCartTotalAmount = (state) => state.cart.cartTotalAmount;
+export const selectPreviousURL = (state) => state.cart.previousURL;
 export default cartSlice.reducer;
