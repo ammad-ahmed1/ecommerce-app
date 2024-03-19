@@ -8,11 +8,7 @@ const Cart = () => {
   //--------hooks--------
   const cartItems = useSelector(selectCartItems);
   const dispatch = useDispatch();
-  let total;
-  let bill = cartItems?.map((item) => {
-    //total += item.price * item.cartQuantity;
-  });
-  //console.log(bill);
+
   //---------functions---------
   const addToCart = (product) => {
     dispatch(ADD_TO_CART(product));

@@ -14,11 +14,13 @@ import {
 import { selectIsLoggedIn } from "../../../../redux/slice/authSlice";
 
 const TotalBillCard = ({ numberOfItems, totalBill }) => {
+  const dispatch = useDispatch();
+  const cartItems = useSelector(selectCartItems);
   const prevURL = useSelector(selectPreviousURL);
-  const navigate = useNavigate();
   const cartTotalAmount = useSelector(selectCartTotalAmount);
   const isLoggedIn = useSelector(selectIsLoggedIn);
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const checkURL = () => {
     if (isLoggedIn) {
       dispatch(SET_PREVIOUS_URL("cart"));
@@ -31,10 +33,12 @@ const TotalBillCard = ({ numberOfItems, totalBill }) => {
   useEffect(() => {
     dispatch(TOTAL_BILL());
   }, []);
-  const cartItems = useSelector(selectCartItems);
+
   let total = 0;
-  for (let i = 0; i < cartItems?.length; i++) {
-    total += cartItems[i]?.subTotal;
+  if (cartItems.length > 0) {
+    for (let i = 0; i < cartItems?.length; i++) {
+      total += cartItems[i]?.subTotal;
+    }
   }
   return (
     <div className={styles.totalBillCardDiv}>
@@ -57,6 +61,7 @@ const TotalBillCard = ({ numberOfItems, totalBill }) => {
             }
             // navigate("/checkout")
           }}
+          disabled={total === 0 ? true : false}
         >
           Checkout
         </button>

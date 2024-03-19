@@ -15,15 +15,17 @@ const cartSlice = createSlice({
   reducers: {
     TOTAL_BILL: (state, action) => {
       const array = [];
-      state.cartItems.map((item) => {
-        const { price, cartQuantity } = item;
-        const cartItemAmout = price * cartQuantity;
-        return array.push(cartItemAmout);
-      });
-      const totalAmount = array.reduce((a, b) => {
-        return a + b;
-      });
-      state.cartTotalAmount = totalAmount;
+      if (state.cartItems.length > 0) {
+        state.cartItems?.map((item) => {
+          const { price, cartQuantity } = item;
+          const cartItemAmout = price * cartQuantity;
+          return array.push(cartItemAmout);
+        });
+        const totalAmount = array.reduce((a, b) => {
+          return a + b;
+        });
+        state.cartTotalAmount = totalAmount;
+      }
     },
     ADD_TO_CART: (state, action) => {
       const productIndex = state.cartItems?.findIndex(
