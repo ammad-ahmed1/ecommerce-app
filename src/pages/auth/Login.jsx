@@ -17,7 +17,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const provider = new GoogleAuthProvider();
   // const auth = getAuth();
-  console.log(loc, "................loc");
+  const loc = window.location.pathname;
   const [formData, setFormData] = useState({
     email: "",
     psw: "",
