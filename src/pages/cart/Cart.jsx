@@ -43,7 +43,7 @@ const Cart = () => {
                 </tr>
               </thead>
               <tbody>
-                {cartItems.map((item, index) => (
+                {cartItems?.map((item, index) => (
                   <tr key={index}>
                     <td>
                       <img
