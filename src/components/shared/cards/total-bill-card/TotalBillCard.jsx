@@ -13,7 +13,7 @@ import {
 } from "../../../../redux/slice/cartSlice";
 import { selectIsLoggedIn } from "../../../../redux/slice/authSlice";
 
-const TotalBillCard = ({ numberOfItems, totalBill }) => {
+const TotalBillCard = ({ numberOfItems, totalBill, showBtn }) => {
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
   const prevURL = useSelector(selectPreviousURL);
@@ -43,9 +43,12 @@ const TotalBillCard = ({ numberOfItems, totalBill }) => {
   return (
     <div className={styles.totalBillCardDiv}>
       <div className={styles.totalBillCard}>
-        <a href="#" className={styles.continueShoppingBtn}>
-          Continue Shopping
-        </a>
+        {showBtn && (
+          <a href="#" className={styles.continueShoppingBtn}>
+            Continue Shopping
+          </a>
+        )}
+
         <div className={styles.cartInfo}>
           <p>Number of Items: {cartItems?.length}</p>
           <p>Total Bill: ${total}</p>
@@ -55,7 +58,7 @@ const TotalBillCard = ({ numberOfItems, totalBill }) => {
           onClick={(e) => {
             const res = checkURL();
             if (isLoggedIn) {
-              navigate("/checkout");
+              navigate("/address-form");
             } else {
               navigate("/login/cart");
             }

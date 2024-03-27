@@ -25,7 +25,8 @@ import Sidebar from "./components/admin-only/sidebar/Sidebar";
 import Orders from "./pages/admin/orders/Orders";
 import ProductDetail from "./pages/product-detail/ProductDetail";
 import ClientSidebar from "./components/shared/sidebar/ClientSidebar";
-import CheckoutForm from "./pages/checkout/checkout-form/CheckoutForm";
+import AddressForm from "./pages/checkout/address-form/AddressForm";
+import Checkout from "./pages/checkout/checkout/Checkout";
 
 // import AddProductForm from "./pages/admin/products/add-products/AddProductForm";
 function AdminLayout({ children }) {
@@ -114,10 +115,10 @@ function App() {
           }
         />
         <Route
-          path="checkout"
+          path="address-form"
           element={
             <UserLayout>
-              <CheckoutForm />
+              <AddressForm />
             </UserLayout>
           }
         />
@@ -135,6 +136,14 @@ function App() {
             <AdminOnlyRoutes>
               <Admin />
             </AdminOnlyRoutes>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoutes>
+              <Checkout />
+            </ProtectedRoutes>
           }
         />
         <Route

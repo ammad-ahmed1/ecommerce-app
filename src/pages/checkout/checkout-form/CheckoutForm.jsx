@@ -1,119 +1,131 @@
-// Checkout.js
-
-import React, { useState } from "react";
-import styles from "./CheckoutForm.module.scss"; // Import CSS module
+import React, { useEffect, useState } from "react";
+import styles from "./CheckoutForm.module.scss";
+import Loader from "../../../components/shared/loader/Loader";
+import { toast } from "react-toastify";
+import {
+  PaymentElement,
+  useStripe,
+  useElements,
+  CardElement,
+} from "@stripe/react-stripe-js";
 
 const CheckoutForm = () => {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    address: "",
-    city: "",
-    zip: "",
-    country: "",
-  });
+  const stripe = useStripe();
+  const elements = useElements();
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
+  const [message, setMessage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!stripe) {
+      return;
+    }
+
+    const clientSecret = new URLSearchParams(window.location.search).get(
+      "payment_intent_client_secret"
+    );
+
+    if (!clientSecret) {
+      return;
+    }
+
+    stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
+      switch (paymentIntent.status) {
+        case "succeeded":
+          setMessage("Payment succeeded!");
+          break;
+        case "processing":
+          setMessage("Your payment is processing.");
+          break;
+        case "requires_payment_method":
+          setMessage("Your payment was not successful, please try again.");
+          break;
+        default:
+          setMessage("Something went wrong.");
+          break;
+      }
     });
+  }, [stripe]);
+  const saveOrder = () => {
+    console.log("Save order!");
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage(null);
+
+    if (!stripe || !elements) {
+      return;
+    }
+
+    setIsLoading(true);
+    const confirmPayment = await stripe
+      .confirmPayment({
+        elements,
+        confirmParams: {
+          // Make sure to change this to your payment completion page
+          return_url: "http://localhost:5173",
+        },
+        redirect_url: "if_required",
+      })
+      .then((result) => {
+        //ok - payment bad - error
+        if (result.error) {
+          toast.error(result.error.message);
+          setMessage(result.error.message);
+          return;
+        }
+        if (result.paymentIntent) {
+          if (result.paymentIntent.status === "succeeded") {
+            setIsLoading(false);
+            toast.success("Payment successful!");
+            return;
+          }
+        }
+      });
+    if (error.type === "card_error" || error.type === "validation_error") {
+      setMessage(error.message);
+    } else {
+      setMessage("An unexpected error occurred.");
+    }
+
+    setIsLoading(false);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
-    setFormData({
-      firstName: "",
-      lastName: "",
-      email: "",
-      address: "",
-      city: "",
-      zip: "",
-      country: "",
-    });
+  const paymentElementOptions = {
+    layout: "tabs",
   };
 
   return (
-    <div>
-      <h2>Checkout</h2>
-      <form className={styles.checkoutForm} onSubmit={handleSubmit}>
-        <label>
-          First Name:
-          <input
-            type="text"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleInputChange}
-            required
-          />
-        </label>
-        <label>
-          Last Name:
-          <input
-            type="text"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleInputChange}
-            required
-          />
-        </label>
-        <label>
-          Email:
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            required
-          />
-        </label>
-        <label>
-          Address:
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleInputChange}
-            required
-          />
-        </label>
-        <label>
-          City:
-          <input
-            type="text"
-            name="city"
-            value={formData.city}
-            onChange={handleInputChange}
-            required
-          />
-        </label>
-        <label>
-          ZIP Code:
-          <input
-            type="text"
-            name="zip"
-            value={formData.zip}
-            onChange={handleInputChange}
-            required
-          />
-        </label>
-        <label>
-          Country:
-          <input
-            type="text"
-            name="country"
-            value={formData.country}
-            onChange={handleInputChange}
-            required
-          />
-        </label>
-        <button type="submit">Place Order</button>
-      </form>
-    </div>
+    <section>
+      <div className={`container ${styles.checkout}`}>
+        <h2>Checkout</h2>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <CardElement cardClass={styles.card}>
+              <PaymentElement
+                id="payment-element"
+                options={paymentElementOptions}
+              />
+              <button disabled={isLoading || !stripe || !elements} id="submit">
+                <span id="button-text">
+                  {isLoading ? (
+                    <div className="spinner" id="spinner">
+                      {" "}
+                      <Loader />
+                    </div>
+                  ) : (
+                    "Pay now"
+                  )}
+                </span>
+              </button>
+              {/* Show any error or success messages */}
+              {message && <div id="payment-message">{message}</div>}
+            </CardElement>
+            <button>Pay</button>
+          </div>
+        </form>
+      </div>
+    </section>
   );
 };
-
 export default CheckoutForm;
