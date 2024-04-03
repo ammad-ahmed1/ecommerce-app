@@ -14,7 +14,6 @@ import {
 } from "../../../redux/slice/cartSlice";
 import CheckoutForm from "../checkout-form/CheckoutForm";
 
-import.meta.env.VITE_STRIPE_PK;
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PK);
 
 const Checkout = () => {
@@ -27,25 +26,37 @@ const Checkout = () => {
   const [message, setMessage] = useState("Initializing Checkout!");
   const [orderSummary, setOrderSummary] = useState(null);
   const [clientSecret, setClientSecret] = useState(""); //stripe state
+  const appearance = {
+    theme: "stripe",
+  };
+
+  // import.meta.env.STRIPE_PVT_KEY
+  const options = {
+    clientSecret,
+    appearance,
+  };
   useEffect(() => {
-    // Create PaymentIntent as soon as the page loads
+    setClientSecret(import.meta.VITE_PVT_KEY);
+  }, []);
+  useEffect(() => {
+    // Create PaymentIntent after component mounts
     fetch("http://localhost:4242/create-payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         items: cartItems,
-        userEmail: orderSummary?.email,
-        address: orderSummary?.address,
+        // userEmail: orderSummary?.email,
+        // address: orderSummary?.address,
       }),
     })
       .then((res) => {
         if (res.ok) {
-          res.json();
+          return res.json();
         }
         return res.json().then((json) => Promise.reject(json));
       })
       .then((data) => {
-        setClientSecret(data.clientSecret);
+        setClientSecret(data.clientSecret); // Use the correct client secret from response
       })
       .catch((error) => {
         setMessage("Failed to initialize checkout!");
@@ -53,13 +64,29 @@ const Checkout = () => {
       });
   }, []);
 
-  const appearance = {
-    theme: "stripe",
+  const CARD_ELEMENT_OPTIONS = {
+    iconStyle: "solid",
+    hidePostalCode: true,
+    style: {
+      base: {
+        iconColor: "rgb(240, 57, 122)",
+        color: "rgb(240, 57, 122)",
+        fontSize: "16px",
+        fontFamily: '"Open Sans", sans-serif',
+        fontSmoothing: "antialiased",
+        "::placeholder": {
+          color: "#CFD7DF",
+        },
+      },
+      invalid: {
+        color: "#e5424d",
+        ":focus": {
+          color: "#303238",
+        },
+      },
+    },
   };
-  const options = {
-    clientSecret,
-    appearance,
-  };
+
   // ----------useEffects--------
   // -------getting order address from local storage--------
   useEffect(() => {
@@ -94,9 +121,14 @@ const Checkout = () => {
           <strong>Total Bill:</strong> {cartTotalAmount}
         </div>
       </div>
-      <Elements options={{}} stripe={stripePromise}>
-        <CheckoutForm />
-      </Elements>
+      <section>
+        <div className="container">{!clientSecret && <h3>{message}</h3>}</div>
+      </section>
+      {clientSecret && (
+        <Elements options={options} stripe={stripePromise}>
+          <CheckoutForm />
+        </Elements>
+      )}
     </div>
   );
 };

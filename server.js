@@ -5,13 +5,14 @@ import Stripe from "stripe";
 
 dotenv.config();
 
-const stripe = new Stripe(process.env.STRIPE_PVT_KEY);
+const stripe = new Stripe(process.env.VITE_PVT_KEY);
+
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-
 app.use(express.static("public"));
+
 const calculateOrderAmount = (items) => {
   // Replace this constant with a calculation of the order's amount
   // Calculate the order total on the server to prevent
@@ -26,6 +27,7 @@ const calculateOrderAmount = (items) => {
     const totalAmount = array.reduce((a, b) => {
       return a + b;
     });
+    console.log(totalAmount * 100);
     return totalAmount * 100;
   }
 };
