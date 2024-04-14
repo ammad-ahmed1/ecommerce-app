@@ -37,6 +37,7 @@ const ViewProducts = () => {
     page,
     pageSize
   );
+  console.log(data);
   const filteredProducts = useSelector(selectFilteredProducts);
   const dispatch = useDispatch();
   const products = useSelector(selectProducts);

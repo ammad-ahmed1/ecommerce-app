@@ -110,6 +110,10 @@ const cartSlice = createSlice({
       //save cart to local storage
       localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
     },
+    CLEAR_CART: (state, action) => {
+      localStorage.removeItem("cartItems");
+      state.cartItems = [];
+    },
     SET_PREVIOUS_URL: (state, action) => {
       console.log(action.payload);
       // state.previousURL = action.payload;
@@ -127,6 +131,7 @@ export const {
   TOTAL_BILL,
   SET_PREVIOUS_URL,
   CLEAR_PREVIOUS_URL,
+  CLEAR_CART,
 } = cartSlice.actions;
 export const selectCartItems = (state) => state.cart.cartItems;
 export const selectCartTotalQuantity = (state) => state.cart.cartTotalQuantity;

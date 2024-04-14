@@ -27,6 +27,7 @@ import ProductDetail from "./pages/product-detail/ProductDetail";
 import ClientSidebar from "./components/shared/sidebar/ClientSidebar";
 import AddressForm from "./pages/checkout/address-form/AddressForm";
 import Checkout from "./pages/checkout/checkout/Checkout";
+import CheckoutSuccess from "./pages/checkout/checkout-success/CheckoutSuccess";
 
 // import AddProductForm from "./pages/admin/products/add-products/AddProductForm";
 function AdminLayout({ children }) {
@@ -77,6 +78,7 @@ function App() {
     <div style={{ margin: "20px" }}>
       <ToastContainer />
       {isShowHeaderAndFooter && <Header />}
+
       <Routes>
         <Route
           path="/"
@@ -86,6 +88,7 @@ function App() {
             </UserLayout>
           }
         />
+        <Route path="/order-confirmed" element={<CheckoutSuccess />} />
         <Route
           path="/contacts"
           element={

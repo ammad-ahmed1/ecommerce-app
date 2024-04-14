@@ -1,0 +1,10 @@
+.cardContainer {
+  display: flex;
+  justify-content: space-between;
+
+  // Adjust spacing based on screen size
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

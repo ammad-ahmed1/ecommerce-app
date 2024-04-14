@@ -1,29 +1,31 @@
-import {
-  collection,
-  limit,
-  onSnapshot,
-  orderBy,
-  query,
-  startAfter,
-  getDocs,
-} from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { db } from "../../firebase/config";
-import { STORE_PRODUCTS } from "../../redux/slice/productSlice";
-import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify"; // Import the toast library
-
-const useFetchCollection = (collectionName, page, pageSize) => {
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  startAfter,
+  limit,
+} from "firebase/firestore";
+const useFetchCollection = (collectionName, page, pageSize, userEmail) => {
   const [data, setData] = useState([]);
   const [isHookLoading, setIsHookLoading] = useState(false);
   const [lastDocument, setLastDocument] = useState(null);
   const [totalProducts, setTotalProducts] = useState(0);
+
   const getCollection = async () => {
     setIsHookLoading(true);
     try {
-      console.log(db);
       let q = collection(db, collectionName);
-      console.log(q);
+
+      // Apply a where clause to filter documents by userEmail
+      if (userEmail) {
+        q = query(q, where("userEmail", "==", userEmail));
+      }
+
       if (lastDocument) {
         q = query(
           q,
@@ -40,7 +42,7 @@ const useFetchCollection = (collectionName, page, pageSize) => {
         id: doc.id,
         ...doc.data(),
       }));
-      console.log(allData);
+
       setData(allData);
       setIsHookLoading(false);
 
@@ -62,7 +64,7 @@ const useFetchCollection = (collectionName, page, pageSize) => {
 
   useEffect(() => {
     getCollection();
-  }, [page, pageSize]);
+  }, [page, pageSize, userEmail]);
 
   return {
     data,

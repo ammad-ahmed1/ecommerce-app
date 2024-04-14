@@ -1,20 +1,45 @@
 import React, { useEffect, useState } from "react";
 import styles from "./CheckoutForm.module.scss";
 import Loader from "../../../components/shared/loader/Loader";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useSelector, useDispatch } from "react-redux";
+import { selectEmail } from "../../../redux/slice/authSlice";
+import { CLEAR_CART } from "../../../redux/slice/cartSlice";
+import { db } from "../../../firebase/config";
 import {
   PaymentElement,
   useStripe,
   useElements,
   CardElement,
 } from "@stripe/react-stripe-js";
+import {
+  Timestamp,
+  addDoc,
+  collection,
+  doc,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 
 const CheckoutForm = ({ clientSecret }) => {
+  //--------------hooks---------------
   const stripe = useStripe();
   const elements = useElements();
+  const nav = useNavigate();
+  const dispatch = useDispatch();
+  const userEmail = useSelector(selectEmail);
+  //-------------states---------------
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  //-------------effects--------------
   useEffect(() => {
     if (!stripe) {
       return;
@@ -28,9 +53,34 @@ const CheckoutForm = ({ clientSecret }) => {
       return;
     }
   }, [stripe]);
-  const saveOrder = () => {
-    console.log("Save order!");
+  //-------------functions------------
+  const createOrder = async () => {
+    try {
+      console.log("creating-order");
+      setIsLoading(true);
+      const products = localStorage.getItem("cartItems");
+      const shippingDetail = localStorage.getItem("orderDetail");
+      const docRef = await addDoc(collection(db, "orders"), {
+        products: products,
+        shippingDetail: shippingDetail,
+        userEmail: userEmail,
+        createdAt: Timestamp.now().toDate(),
+      });
+      toast.success("Order created succesfuly");
+      setIsLoading(false);
+    } catch (error) {
+      toast.error(error.message);
+      setIsLoading(false);
+    }
   };
+  const saveOrder = async () => {
+    console.log("Save order!");
+    await createOrder();
+    dispatch(CLEAR_CART());
+    nav("/order-confirmed");
+  };
+
+  //------------stripe func-----------
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage(null);

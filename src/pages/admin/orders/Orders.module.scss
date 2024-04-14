@@ -1,0 +1,70 @@
+// Orders.module.scss
+
+.tableContainer {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.table th,
+.table td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.table th {
+  background-color: #f2f2f2;
+}
+
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popupContent {
+  background-color: #fefefe;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.popup table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.popup th,
+.popup td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.popup th {
+  background-color: #f2f2f2;
+}
+
+.popup img {
+  max-width: 100px;
+  max-height: 100px;
+}
