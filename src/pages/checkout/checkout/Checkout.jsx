@@ -129,6 +129,10 @@ const Checkout = () => {
           <CheckoutForm />
         </Elements>
       )}
+      {/* -----to test orders when stripe is not working------ */}
+      {/* <Elements options={options} stripe={stripePromise}>
+        <CheckoutForm />
+      </Elements> */}
     </div>
   );
 };

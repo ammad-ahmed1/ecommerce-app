@@ -1,19 +1,33 @@
 import React, { useState, useEffect } from "react";
 import styles from "./Orders.module.scss";
 import useFetchCollection from "../../../custom-hooks/useFetchCollection/useFetchCollection";
+import Loader from "../../../components/shared/loader/Loader";
+import { useSelector, useDispatch } from "react-redux";
+import { UPDATE_STATUS } from "../../../redux/slice/orderSlice";
 
 const Orders = () => {
+  //----------states-------
+  // State to manage modal visibility and selected order
+  const [fetchTrigger, setFetchTrigger] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   // ---------hooks---------
+  const dispatch = useDispatch();
   const { data, isHookLoading, totalProducts } = useFetchCollection(
     "orders",
     1,
-    3
+    200,
+    fetchTrigger
   );
+  // -------functions-------
 
-  // State to manage modal visibility and selected order
-  const [showModal, setShowModal] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState(null);
-
+  const handleUpdateOrder = (order) => {
+    dispatch(UPDATE_STATUS({ orderId: order?.id, newStatus: "completed" }));
+    setFetchTrigger(true);
+  };
+  const handleDispatch = (product) => {
+    console.log(product);
+  };
   // Function to handle showing modal and setting selected order
   const handleViewOrder = (order) => {
     setSelectedOrder(order);
@@ -42,49 +56,60 @@ const Orders = () => {
   };
 
   // ---------effect--------
-  useEffect(() => {
-    // console.log(data);
-  }, [data]);
+  useEffect(() => {}, []);
 
-  console.log(data);
   return (
     <div>
-      <div className={styles.tableContainer}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Shipping City</th>
-              <th>Shipping Address</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>ZIP</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((order) => (
-              <tr key={order.id}>
-                <td>{order.id}</td>
-                <td>{parseJSON(order.shippingDetail).city}</td>
-                <td>{parseJSON(order.shippingDetail).address}</td>
-                <td>
-                  {parseJSON(order.shippingDetail).firstName}{" "}
-                  {parseJSON(order.shippingDetail).lastName}
-                </td>
-                <td>{parseJSON(order.shippingDetail).email}</td>
-                <td>{parseJSON(order.shippingDetail).zip}</td>
-                <td>
-                  <button onClick={() => handleViewOrder(order)}>
-                    View Order
-                  </button>
-                </td>
+      {isHookLoading ? (
+        <Loader />
+      ) : (
+        <div className={styles.tableContainer}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Shipping City</th>
+                <th>Shipping Address</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>ZIP</th>
+                <th>Status</th>
+                <th>View</th>
+                <th>Delivered</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
+            </thead>
+            <tbody>
+              {data.map((order) => (
+                <tr key={order.id}>
+                  <td>{order.id}</td>
+                  <td>{parseJSON(order.shippingDetail).city}</td>
+                  <td>{parseJSON(order.shippingDetail).address}</td>
+                  <td>
+                    {parseJSON(order.shippingDetail).firstName}{" "}
+                    {parseJSON(order.shippingDetail).lastName}
+                  </td>
+                  <td>{parseJSON(order.shippingDetail).email}</td>
+                  <td>{parseJSON(order.shippingDetail).zip}</td>
+                  <td>{order?.status}</td>
+                  <td>
+                    <button onClick={() => handleViewOrder(order)}>
+                      View Order
+                    </button>
+                  </td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      disabled={order?.status === "completed" ? true : false}
+                      onClick={(e) => handleUpdateOrder(order)}
+                      checked={order?.status === "completed" ? true : false}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
       {/* Popup for viewing order details */}
       {showModal && (
         <div className={styles.popup}>

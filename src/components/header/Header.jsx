@@ -74,7 +74,7 @@ const Header = () => {
         </div>
         <div className={styles.right}>
           <AdminOnlyRoutes>
-            <Link to="/admin">
+            <Link to="/admin/dashboard">
               <button className={styles.adminBtn}>Admin</button>
             </Link>
           </AdminOnlyRoutes>
@@ -87,6 +87,9 @@ const Header = () => {
           </Link>
           <Link to="/contact" className={styles.nav}>
             Contact Us
+          </Link>
+          <Link to="/order-status" className={styles.nav}>
+            Orders
           </Link>
           <Link to="/cart" className={styles.nav}>
             <img src="/icons/cart-icon.png" />

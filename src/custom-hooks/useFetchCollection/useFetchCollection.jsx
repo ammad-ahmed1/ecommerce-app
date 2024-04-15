@@ -13,7 +13,7 @@ import { STORE_PRODUCTS } from "../../redux/slice/productSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify"; // Import the toast library
 
-const useFetchCollection = (collectionName, page, pageSize) => {
+const useFetchCollection = (collectionName, page, pageSize, triggerFetch) => {
   const [data, setData] = useState([]);
   const [isHookLoading, setIsHookLoading] = useState(false);
   const [lastDocument, setLastDocument] = useState(null);
@@ -62,7 +62,7 @@ const useFetchCollection = (collectionName, page, pageSize) => {
 
   useEffect(() => {
     getCollection();
-  }, [page, pageSize]);
+  }, [page, pageSize, triggerFetch]);
 
   return {
     data,

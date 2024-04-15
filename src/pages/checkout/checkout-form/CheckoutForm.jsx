@@ -28,6 +28,7 @@ import {
   getDownloadURL,
   deleteObject,
 } from "firebase/storage";
+import { CREATE_ORDERS } from "../../../redux/slice/orderSlice";
 
 const CheckoutForm = ({ clientSecret }) => {
   //--------------hooks---------------
@@ -36,6 +37,9 @@ const CheckoutForm = ({ clientSecret }) => {
   const nav = useNavigate();
   const dispatch = useDispatch();
   const userEmail = useSelector(selectEmail);
+  // ------------vars--------------
+  const products = localStorage.getItem("cartItems");
+  const shippingDetail = localStorage.getItem("orderDetail");
   //-------------states---------------
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -58,8 +62,7 @@ const CheckoutForm = ({ clientSecret }) => {
     try {
       console.log("creating-order");
       setIsLoading(true);
-      const products = localStorage.getItem("cartItems");
-      const shippingDetail = localStorage.getItem("orderDetail");
+
       const docRef = await addDoc(collection(db, "orders"), {
         products: products,
         shippingDetail: shippingDetail,
@@ -75,7 +78,15 @@ const CheckoutForm = ({ clientSecret }) => {
   };
   const saveOrder = async () => {
     console.log("Save order!");
-    await createOrder();
+    // await createOrder();
+    dispatch(
+      CREATE_ORDERS({
+        products,
+        shippingDetail,
+        userEmail,
+        createdAt: Timestamp.now().toDate(),
+      })
+    );
     dispatch(CLEAR_CART());
     nav("/order-confirmed");
   };
@@ -123,11 +134,12 @@ const CheckoutForm = ({ clientSecret }) => {
   };
 
   return (
-    <section>
-      <h2>Checkout</h2>
-      <form className={styles.paymentForm} onSubmit={handleSubmit}>
-        <div>
-          {/* <CardElement className={styles.card}>
+    <div>
+      <section>
+        <h2>Checkout</h2>
+        <form className={styles.paymentForm} onSubmit={handleSubmit}>
+          <div>
+            {/* <CardElement className={styles.card}>
             <PaymentElement
               id="payment-element"
               options={paymentElementOptions}
@@ -150,11 +162,14 @@ const CheckoutForm = ({ clientSecret }) => {
               </div>
             )}
           </CardElement> */}
-          <PaymentElement />
-          <button>Pay</button>
-        </div>
-      </form>
-    </section>
+            <PaymentElement />
+            <button>Pay</button>
+          </div>
+        </form>
+      </section>
+      {/* ------to check order creation when stripe is not working------ */}
+      {/* <button onClick={(e) => saveOrder()}>Pay</button> */}
+    </div>
   );
 };
 export default CheckoutForm;

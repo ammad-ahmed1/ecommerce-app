@@ -1,0 +1,27 @@
+/* BarGraph.module.scss */
+
+.barGraphContainer {
+  width: 40vw;
+  height: 70vh;
+  //   border: 1px solid #ccc;
+  //   border-radius: 8px;
+  overflow: hidden;
+}
+
+/* You can adjust the chart's appearance according to your preference */
+.recharts-cartesian-axis-tick {
+  font-size: 12px;
+}
+
+.recharts-cartesian-axis-domain,
+.recharts-cartesian-axis-tick-line {
+  display: none;
+}
+
+.recharts-legend-wrapper {
+  font-size: 14px;
+}
+
+.recharts-text {
+  font-size: 12px;
+}

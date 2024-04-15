@@ -142,6 +142,14 @@ function App() {
           }
         />
         <Route
+          path="/order-status"
+          element={
+            <ProtectedRoutes>
+              <OrderHistory />
+            </ProtectedRoutes>
+          }
+        />
+        <Route
           path="/checkout"
           element={
             <ProtectedRoutes>

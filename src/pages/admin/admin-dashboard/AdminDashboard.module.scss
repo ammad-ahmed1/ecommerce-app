@@ -1,6 +1,7 @@
 .cardContainer {
   display: flex;
   justify-content: space-between;
+  margin-top: 20px;
 
   // Adjust spacing based on screen size
   @media (max-width: 768px) {

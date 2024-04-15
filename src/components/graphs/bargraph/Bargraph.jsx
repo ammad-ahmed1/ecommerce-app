@@ -12,10 +12,16 @@ import {
 import styles from "./BarGraph.module.scss";
 
 const BarGraph = ({ data }) => {
+  const dummyData = [
+    { label: "Total Products", value: 100 },
+    { label: "Sold Out", value: 40 },
+    { label: "Investment Covered", value: 70 },
+  ];
   return (
     <div className={styles.barGraphContainer}>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data}>
+        <h2 className={styles.chartTitle}>Orders Overview</h2>{" "}
+        <BarChart data={dummyData}>
           <XAxis dataKey="label" />
           <YAxis />
           <Tooltip />
