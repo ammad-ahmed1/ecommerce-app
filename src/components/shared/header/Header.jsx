@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Header.module.scss";
 import { Link } from "react-router-dom";
-import { auth } from "../../firebase/config";
 import { ToastContainer, toast } from "react-toastify";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
@@ -10,9 +9,10 @@ import { signOut } from "firebase/auth";
 import {
   SET_ACTIVE_USER,
   REMOVE_ACTIVE_USER,
-} from "../../redux/slice/authSlice";
-import AdminOnlyRoutes from "../admin-only/routes/AdminOnlyRoutes";
-import ShowOnLogin from "../hidden-link/HiddenLink";
+} from "../../../redux/slice/authSlice";
+import AdminOnlyRoutes from "../../admin-only/routes/AdminOnlyRoutes";
+import ShowOnLogin from "../../hidden-link/HiddenLink";
+import { auth } from "../../../firebase/config";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -82,10 +82,10 @@ const Header = () => {
           <Link to="/" className={styles.nav}>
             Home
           </Link>
-          <Link to="/about" className={styles.nav}>
+          <Link to="/about-us" className={styles.nav}>
             About
           </Link>
-          <Link to="/contact" className={styles.nav}>
+          <Link to="/contact-us" className={styles.nav}>
             Contact Us
           </Link>
           <Link to="/order-status" className={styles.nav}>
@@ -120,16 +120,16 @@ const Header = () => {
       {showMenu && (
         <div className={`${styles.drawer}`}>
           <span className={styles.drawerLogo}>SFH</span>
-          <Link to="/admin" className={styles.mobNav}>
+          <Link to="/admin/dashboard" className={styles.mobNav}>
             Admin
           </Link>
           <Link to="/" className={styles.mobNav}>
             Home
           </Link>
-          <Link to="/about" className={styles.mobNav}>
+          <Link to="/about-us" className={styles.mobNav}>
             About
           </Link>
-          <Link to="/contact" className={styles.mobNav}>
+          <Link to="/contact-us" className={styles.mobNav}>
             Contact Us
           </Link>
           <div className={styles.logoutBtnContainer}>

@@ -12,5 +12,5 @@ export const rootReducer = combineReducers({
   filter: filterSlice,
   cart: cartSlice,
   checkout: checkoutSlice,
-  orders: orderSlice,
+  order: orderSlice,
 });

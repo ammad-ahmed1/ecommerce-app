@@ -21,9 +21,7 @@ const useFetchCollection = (collectionName, page, pageSize, triggerFetch) => {
   const getCollection = async () => {
     setIsHookLoading(true);
     try {
-      console.log(db);
       let q = collection(db, collectionName);
-      console.log(q);
       if (lastDocument) {
         q = query(
           q,
@@ -40,7 +38,6 @@ const useFetchCollection = (collectionName, page, pageSize, triggerFetch) => {
         id: doc.id,
         ...doc.data(),
       }));
-      console.log(allData);
       setData(allData);
       setIsHookLoading(false);
 

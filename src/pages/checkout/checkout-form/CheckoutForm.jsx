@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
 import { selectEmail } from "../../../redux/slice/authSlice";
-import { CLEAR_CART } from "../../../redux/slice/cartSlice";
 import { db } from "../../../firebase/config";
 import {
   PaymentElement,
@@ -13,21 +12,12 @@ import {
   useElements,
   CardElement,
 } from "@stripe/react-stripe-js";
+import { Timestamp, addDoc, collection } from "firebase/firestore";
 import {
-  Timestamp,
-  addDoc,
-  collection,
-  doc,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-  deleteObject,
-} from "firebase/storage";
+  CLEAR_CART,
+  TOTAL_BILL,
+  selectCartTotalAmount,
+} from "../../../redux/slice/cartSlice";
 import { CREATE_ORDERS } from "../../../redux/slice/orderSlice";
 
 const CheckoutForm = ({ clientSecret }) => {
@@ -37,6 +27,7 @@ const CheckoutForm = ({ clientSecret }) => {
   const nav = useNavigate();
   const dispatch = useDispatch();
   const userEmail = useSelector(selectEmail);
+  const bill = useSelector(selectCartTotalAmount);
   // ------------vars--------------
   const products = localStorage.getItem("cartItems");
   const shippingDetail = localStorage.getItem("orderDetail");
@@ -79,19 +70,24 @@ const CheckoutForm = ({ clientSecret }) => {
   const saveOrder = async () => {
     console.log("Save order!");
     // await createOrder();
+    console.log(products, "....................bill");
     dispatch(
       CREATE_ORDERS({
         products,
         shippingDetail,
         userEmail,
+        bill,
         createdAt: Timestamp.now().toDate(),
       })
     );
     dispatch(CLEAR_CART());
     nav("/order-confirmed");
   };
-
-  //------------stripe func-----------
+  // -----------effect------------
+  useEffect(() => {
+    dispatch(TOTAL_BILL());
+  }, []);
+  //-----------stripe func-----------
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage(null);
@@ -128,9 +124,6 @@ const CheckoutForm = ({ clientSecret }) => {
       });
 
     setIsLoading(false);
-  };
-  const paymentElementOptions = {
-    layout: "tabs",
   };
 
   return (

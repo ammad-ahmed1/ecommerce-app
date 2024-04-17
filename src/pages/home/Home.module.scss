@@ -1,0 +1,48 @@
+.grid_container {
+  max-width: 95vw;
+  display: grid;
+  grid-template-columns: repeat(
+    2,
+    1fr
+  ); // Two columns for desktop, laptop, and tablet
+  gap: 10px; // Adjust the gap between items as needed
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr; // One column for mobile
+  }
+}
+
+.grid_item {
+  position: relative;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%; // Ensure the image takes up the entire container
+  object-fit: cover; // Maintain aspect ratio and cover the entire container
+  transition: transform 0.3s ease;
+}
+
+.image:hover {
+  transform: scale(1.1); // Zoom effect on hover
+}
+
+.text {
+  background: #1e1e1e;
+  padding: 15px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ffff;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.grid_item:hover .text {
+  opacity: 1; // Show text on hover
+}

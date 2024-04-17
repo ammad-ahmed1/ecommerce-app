@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { toast } from "react-toastify"; // Assuming you're using some toast library
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
 import { db } from "../../firebase/config";
 import {
   Timestamp,
@@ -7,32 +7,85 @@ import {
   collection,
   doc,
   updateDoc,
+  getDocs,
+  query,
+  orderBy,
+  where,
 } from "firebase/firestore";
 
 const initialState = {
   orders: [],
+  isFetchLoading: false,
+  isFilterLoading: false,
+  pendingOrders: [],
+  completedOrders: [],
+  filteredOrders: [],
 };
+export const createOrder = createAsyncThunk(
+  "orders/createOrder",
+  async (orderData) => {
+    try {
+      const docRef = await addDoc(collection(db, "orders"), {
+        // products,
+        // shippingDetail,
+        // userEmail,
+        // status: "pending",
+        // bill,
+        // createdAt: Timestamp.now().toDate(),
+      });
+      toast.success("Order created successfully");
+    } catch (error) {}
+  }
+);
+export const fetchOrders = createAsyncThunk("orders/fetchOrders", async () => {
+  try {
+    const querySnapshot = await getDocs(
+      query(collection(db, "orders"), orderBy("createdAt", "desc"))
+    );
+    const orders = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return orders;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+});
+export const filterOrders = createAsyncThunk(
+  "orders/filterOrders",
+  async (status) => {
+    try {
+      const querySnapshot = await getDocs(
+        query(collection(db, "orders"), where("status", "==", status))
+      );
+      const filteredOrders = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      return [filteredOrders, status];
+    } catch (error) {
+      console.log(error);
+      return Promise.reject(error); // Reject the promise with the error
+    }
+  }
+);
 const orderSlice = createSlice({
   name: "order",
   initialState,
   reducers: {
     CREATE_ORDERS: async (state, action) => {
-      const { products, shippingDetail, userEmail } = action.payload;
+      const { products, shippingDetail, userEmail, bill } = action.payload;
       try {
-        console.log("creating-order");
-        // Assuming setIsLoading is a Redux action dispatched to manage loading state
-        // Dispatch setIsLoading(true);
         const docRef = await addDoc(collection(db, "orders"), {
-          products: products,
-          shippingDetail: shippingDetail,
-          userEmail: userEmail,
+          products,
+          shippingDetail,
+          userEmail,
           status: "pending",
+          bill,
           createdAt: Timestamp.now().toDate(),
         });
-        // Dispatch setIsLoading(false);
         toast.success("Order created successfully");
       } catch (error) {
-        // Dispatch setIsLoading(false);
         toast.error(error.message);
       }
     },
@@ -49,9 +102,67 @@ const orderSlice = createSlice({
         toast.error(error.message);
       }
     },
+
+    FILTER_ORDERS: async (state, action) => {
+      const { status } = action.payload;
+      state.isFilterLoading = true;
+      try {
+        const querySnapshot = await getDocs(
+          query(collection(db, "orders"), where("status", "==", status))
+        );
+        state.filteredOrders = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+      } catch (error) {
+        toast.error(error.message);
+      }
+      state.isFilterLoading = false;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      // ----------fetch----------
+      .addCase(fetchOrders.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchOrders.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orders = action.payload;
+      })
+      .addCase(fetchOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      // ----------filter----------
+      .addCase(filterOrders.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(filterOrders.fulfilled, (state, action) => {
+        state.loading = false;
+        if (action.payload[1] === "pending") {
+          state.pendingOrders = action.payload[0];
+        } else if (action.payload[1] === "completed") {
+          state.completedOrders = action.payload[0];
+        } else {
+        }
+        state.filteredOrders = action.payload[0];
+      })
+      .addCase(filterOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
   },
 });
 
-export const { CREATE_ORDERS, UPDATE_STATUS } = orderSlice.actions;
-export const selectOrders = (state) => state.order.orders;
+export const { CREATE_ORDERS, UPDATE_STATUS, FILTER_ORDERS } =
+  orderSlice.actions;
+export const selectOrders = (state) => state.order;
+export const selectIsFetchLoading = (state) => state.order.isFetchLoading;
+export const selectFilteredOrders = (state) => state.order.filteredOrders;
+export const selectIsFilterLoading = (state) => state.order.isFilterLoading;
+export const selectPendingOrders = (state) => state.order.pendingOrders;
+export const selectCompletedOrders = (state) => state.order.completedOrders;
 export default orderSlice.reducer;

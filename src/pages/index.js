@@ -9,3 +9,4 @@ export { default as Reset } from "./auth/Reset";
 export { default as AdminDashboard } from "./admin/admin-dashboard/AdminDashboard";
 export { default as AddProductForm } from "./admin/products/add-products/AddProductForm";
 export { default as ViewProducts } from "./admin/products/view-products/ViewProducts";
+export { default as AboutUs } from "./about-us/AboutUs";

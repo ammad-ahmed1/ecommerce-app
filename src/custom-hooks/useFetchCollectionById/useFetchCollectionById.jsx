@@ -67,7 +67,6 @@ const useFetchCollectionByID = (collectionName, page, pageSize, userEmail) => {
     try {
       console.log(db);
       let q = collection(db, collectionName);
-      console.log(q, ",,,,,,,,,,,,,,,,,,,,q");
 
       // Apply a where clause to filter documents by userName
       if (userEmail) {
@@ -90,7 +89,6 @@ const useFetchCollectionByID = (collectionName, page, pageSize, userEmail) => {
         id: doc.id,
         ...doc.data(),
       }));
-      console.log(allData);
       setData(allData);
       setIsHookLoading(false);
 

@@ -1,98 +1,147 @@
 import React, { useEffect, useState } from "react";
-
 import styles from "./AdminDashboard.module.scss";
 import SmallCard from "../../../components/shared/cards/small-card/SmallCard";
 import BarGraph from "../../../components/graphs/bargraph/Bargraph";
 import OrdersPieChart from "../../../components/graphs/piechart/PieChart";
-import { collection, getDocs, query, where } from "firebase/firestore";
-
-import { db } from "../../../firebase/config";
 import useFetchCollection from "../../../custom-hooks/useFetchCollection/useFetchCollection";
+import Loader from "../../../components/shared/loader/Loader";
+import { useDispatch, useSelector } from "react-redux";
+import { db } from "../../../firebase/config";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  selectOrders,
+  selectFilteredOrders,
+  selectCompletedOrders,
+  selectPendingOrders,
+  // selectFilteredOrders,
+  // selectIsFetchLoading,
+  // selectIsFilterLoading,
+  fetchOrders,
+  filterOrders,
+} from "../../../redux/slice/orderSlice";
 
 const AdminDashboard = () => {
   // ------states------
-  const [ordersData, setOrdersData] = useState([]);
-  const [productsData, setProductsData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  console.log(productsData, ".............................pd");
+  // const [orders, setOrders] = useState([]);
+  const [totalSales, setTotalSales] = useState(0);
+  const [percentage, setPercentage] = useState({});
   // ------hooks-------
-  const {
-    data: d,
-    isHookLoading: orderLoading,
-    totalProducts: totalOrders,
-  } = useFetchCollection("orders", 1, 200);
-  const {
-    data: productData,
-    isHookLoading: productLoading,
-    totalProducts: totalProductsNumber,
-  } = useFetchCollection("products", 1, 200);
-  console.log(productData);
-  // const { data, isHookLoading, totalProducts } = useFetchCollection(
-  //   "product",
-  //   1,
-  //   200
-  // );
-  console.log(productData);
+  const orders = useSelector(selectOrders);
+  const filteredOrders = useSelector(selectFilteredOrders);
+  const completedOrders = useSelector(selectCompletedOrders);
+  const pendingOrders = useSelector(selectPendingOrders);
+  const dispatch = useDispatch();
+  const { data: data1, isHookLoading: isHookLoading1 } = useFetchCollection(
+    "product",
+    1,
+    200
+  );
+  const { data: data2, isHookLoading: isHookLoading2 } = useFetchCollection(
+    "orders",
+    1,
+    200
+  );
   // ----functions-----
-  const fetchData = async () => {
-    setIsLoading(true); // Set loading state to true before fetching
+  const calTotalBill = () => {
+    var total = 0;
+    data2?.map((item) => {
+      total += item?.bill;
+    });
+    return total;
+  };
+  const ordersPercentage = (completedOrders, pendingOrders, orders) => {
+    const totalPercentage = 100; // Constant for calculating percentages
+    // Calculate percentages (avoid potential division by zero)
+    const completedNumber = completedOrders?.length;
+    const pendingNumber = pendingOrders?.length;
+    const pendingPercentage = (pendingNumber / orders?.orders?.length) * 100;
 
-    try {
-      const ordersCollection = collection(db, "orders");
-      const productsCollection = collection(db, "products");
+    const completedPercentage =
+      (completedNumber / orders?.orders?.length) * 100;
+    // Round percentages to two decimal places (optional)
 
-      // **Optional for security:** If applicable, consider adding user-based filtering here using `where` clauses (explained later)
-
-      const ordersQuery = query(ordersCollection); // Get all orders (replace with specific query if needed)
-      const productsQuery = query(productsCollection); // Get all products (replace with specific query if needed)
-
-      const ordersSnapshot = await getDocs(ordersQuery);
-      const productsSnapshot = await getDocs(productsQuery);
-
-      const fetchedOrders = ordersSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      const fetchedProducts = productsSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      setOrdersData(fetchedOrders);
-      setProductsData(fetchedProducts);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setIsLoading(false); // Set loading state to false after fetching
-    }
+    setPercentage({ pendingPercentage, completedPercentage });
+    // return percentage;
   };
   // -------effect-------
   useEffect(() => {
-    fetchData();
+    dispatch(fetchOrders());
+  }, [dispatch]);
+  useEffect(() => {
+    dispatch(filterOrders("pending"));
+  }, [dispatch]);
+  useEffect(() => {
+    dispatch(filterOrders("completed"));
+  }, [dispatch]);
+  useEffect(() => {
+    ordersPercentage(completedOrders, pendingOrders, orders);
+  }, [dispatch]);
+  useEffect(() => {
+    let total = 0;
+    orders?.orders?.map((item) => {
+      total += item?.bill;
+    });
+    setTotalSales(total);
   }, []);
-  const data1 = {
-    labels: ["Total Products", "Sold Out", "Investment Covered"],
+
+  // useEffect(() => {
+  //   // Query pending orders
+  //   const pendingQuery = db
+  //     .collection("orders")
+  //     .where("status", "==", "pending");
+  //   const unsubscribePending = pendingQuery.onSnapshot((snapshot) => {
+  //     const pendingOrdersData = snapshot.docs.map((doc) => ({
+  //       id: doc.id,
+  //       ...doc.data(),
+  //     }));
+  //     setPendingOrders(pendingOrdersData);
+  //   });
+
+  //   // Query completed orders
+  //   const completedQuery = db
+  //     .collection("orders")
+  //     .where("status", "==", "completed");
+  //   const unsubscribeCompleted = completedQuery.onSnapshot((snapshot) => {
+  //     const completedOrdersData = snapshot.docs.map((doc) => ({
+  //       id: doc.id,
+  //       ...doc.data(),
+  //     }));
+  //     setCompletedOrders(completedOrdersData);
+  //   });
+
+  //   return () => {
+  //     unsubscribePending();
+  //     unsubscribeCompleted();
+  //   };
+  // }, []);
+  const data = {
+    labels: ["Total Products", "Orders", "Investment Covered"],
     datasets: [
       {
         label: "Value",
         backgroundColor: ["#007bff", "#28a745", "#ffc107"],
-        data: [100, 40, 70],
+        data: [data1?.length, data2?.length, 70],
       },
     ],
   };
   return (
-    <div>
-      <div className={styles.cardContainer}>
-        <SmallCard heading={"Total Products"} value={productsData.length} />
-        <SmallCard heading={"Sold out"} value="3" />
-        <SmallCard heading={"Inv. Covered"} value="28000" />
-      </div>
-
-      <div className={styles.cardContainer}>
-        <BarGraph data={data1} />
-        <OrdersPieChart />
-      </div>
-    </div>
+    <>
+      {isHookLoading1 || isHookLoading2 ? (
+        <Loader />
+      ) : (
+        <div>
+          <div className={styles.cardContainer}>
+            <SmallCard heading={"Total Products"} value={data1.length} />
+            <SmallCard heading={"Orders"} value={data2?.length} />
+            <SmallCard heading={"Sales"} value={calTotalBill()} />
+          </div>
+          <div className={styles.cardContainer}>
+            <BarGraph data={data} />
+            <OrdersPieChart data={percentage} />
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

@@ -2,14 +2,13 @@ import React from "react";
 import { PieChart, Pie, Cell, Legend } from "recharts";
 import styles from "./OrdersPieChart.module.scss"; // Import SCSS module
 
-const data = [
-  { name: "Delivered", value: 80 },
-  { name: "Pending", value: 20 },
-];
+const COLORS = ["#FFBB28", "#0088FE"];
 
-const COLORS = ["#0088FE", "#FFBB28"];
-
-const OrdersPieChart = () => {
+const OrdersPieChart = ({ data }) => {
+  const data1 = [
+    { name: "Pending", value: data?.pendingPercentage },
+    { name: "Delivered", value: data?.completedPercentage },
+  ];
   return (
     <div className={styles.chartContainer}>
       {" "}
@@ -18,7 +17,7 @@ const OrdersPieChart = () => {
       {/* Apply styles */}
       <PieChart width={600} height={400}>
         <Pie
-          data={data}
+          data={data1}
           cx={300}
           cy={200}
           labelLine={false}
@@ -42,7 +41,7 @@ const OrdersPieChart = () => {
             );
           }}
         >
-          {data.map((entry, index) => (
+          {data1.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>

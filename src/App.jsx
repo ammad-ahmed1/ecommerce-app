@@ -14,6 +14,7 @@ import {
   AddProductForm,
   ViewProducts,
   Cart,
+  AboutUs,
 } from "./pages";
 import { Header, Footer } from "./components/index";
 import ShowOnLogin from "./components/hidden-link/HiddenLink";
@@ -28,7 +29,6 @@ import ClientSidebar from "./components/shared/sidebar/ClientSidebar";
 import AddressForm from "./pages/checkout/address-form/AddressForm";
 import Checkout from "./pages/checkout/checkout/Checkout";
 import CheckoutSuccess from "./pages/checkout/checkout-success/CheckoutSuccess";
-
 // import AddProductForm from "./pages/admin/products/add-products/AddProductForm";
 function AdminLayout({ children }) {
   // You can customize the sidebar here
@@ -46,15 +46,13 @@ function AdminLayout({ children }) {
 }
 function UserLayout({ children }) {
   // You can customize the sidebar here
-  const clientSidebar = <ClientSidebar />;
+  // const clientSidebar = <ClientSidebar />;
 
   return (
     <div style={{ display: "flex" }}>
       {/* {clientSidebar} */}
-      <div style={{ flex: 1, padding: "20px" }}>
-        {/* Content on the right side */}
-        {children}
-      </div>
+      {/* flex: 1, padding: "20px" */}
+      <div style={{}}>{children}</div>
     </div>
   );
 }
@@ -80,6 +78,10 @@ function App() {
       {isShowHeaderAndFooter && <Header />}
 
       <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/login/cart" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/reset-password" element={<Reset />} />
         <Route
           path="/"
           element={
@@ -88,19 +90,24 @@ function App() {
             </UserLayout>
           }
         />
+        <Route
+          path="/about-us"
+          element={
+            <UserLayout>
+              <AboutUs />
+            </UserLayout>
+          }
+        />
         <Route path="/order-confirmed" element={<CheckoutSuccess />} />
         <Route
-          path="/contacts"
+          path="/contact-us"
           element={
             <UserLayout>
               <Contact />
             </UserLayout>
           }
         />
-        <Route path="/login" element={<Login />} />
-        <Route path="/login/cart" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/reset-password" element={<Reset />} />
+
         <Route
           path="/view-products"
           element={

@@ -13,9 +13,8 @@ import styles from "./BarGraph.module.scss";
 
 const BarGraph = ({ data }) => {
   const dummyData = [
-    { label: "Total Products", value: 100 },
-    { label: "Sold Out", value: 40 },
-    { label: "Investment Covered", value: 70 },
+    { label: "Total Products", value: data?.datasets[0]?.data[0] },
+    { label: "Orders", value: data?.datasets[0]?.data[1] },
   ];
   return (
     <div className={styles.barGraphContainer}>
