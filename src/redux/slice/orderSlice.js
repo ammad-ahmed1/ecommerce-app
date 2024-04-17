@@ -15,6 +15,7 @@ import {
 
 const initialState = {
   orders: [],
+  ordersByEmail: [],
   isFetchLoading: false,
   isFilterLoading: false,
   pendingOrders: [],
@@ -66,6 +67,24 @@ export const filterOrders = createAsyncThunk(
     } catch (error) {
       console.log(error);
       return Promise.reject(error); // Reject the promise with the error
+    }
+  }
+);
+export const getOrdersByEmail = createAsyncThunk(
+  "orders/getOrderByEmail",
+  async (userEmail) => {
+    console.log(userEmail, ".....................email");
+    try {
+      const querySnapshot = await getDocs(
+        query(collection(db, "orders"), where("userEmail", "==", userEmail))
+      );
+      const orders = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      return orders;
+    } catch (error) {
+      return Promise.reject(error);
     }
   }
 );
@@ -154,6 +173,21 @@ const orderSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       });
+    // ---------fetch by email ---------
+    builder.addCase(getOrdersByEmail.pending, (state) => {
+      state.isFetchLoading = true; // Assuming you want to show loading state
+      state.error = null;
+    });
+    builder.addCase(getOrdersByEmail.fulfilled, (state, action) => {
+      state.isFetchLoading = false;
+      console.log(action.payload, ".................orders email");
+      state.ordersByEmail = action.payload; // Update orders state with retrieved orders
+    });
+    builder.addCase(getOrdersByEmail.rejected, (state, action) => {
+      state.isFetchLoading = false;
+      state.error = action.error.message;
+      toast.error("Error fetching orders"); // Handle error with toast notification
+    });
   },
 });
 
@@ -165,4 +199,5 @@ export const selectFilteredOrders = (state) => state.order.filteredOrders;
 export const selectIsFilterLoading = (state) => state.order.isFilterLoading;
 export const selectPendingOrders = (state) => state.order.pendingOrders;
 export const selectCompletedOrders = (state) => state.order.completedOrders;
+export const selectOrdersByEmail = (state) => state.order.ordersByEmail;
 export default orderSlice.reducer;
