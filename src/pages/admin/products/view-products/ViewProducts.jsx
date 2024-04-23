@@ -7,21 +7,28 @@ import { toast } from "react-toastify"; // Import the toast library
 import ProductCard from "../../../../components/shared/cards/product-card/ProductCard";
 import { deleteObject, ref } from "firebase/storage";
 import {
-  STORE_PRODUCTS,
-  selectProducts,
-} from "../../../../redux/slice/productSlice";
-import {
   FILTER_BY_SEARCH,
-  selectFilteredProducts,
   SORT_PRODUCTS,
 } from "../../../../redux/slice/filterSlice";
-import { ADD_TO_CART } from "../../../../redux/slice/cartSlice";
 import useFetchCollection from "../../../../custom-hooks/useFetchCollection/useFetchCollection";
 import Search from "../../../../components/shared/search/Search";
 import Sort from "../../../../components/shared/sort/Sort";
 import Loader from "../../../../components/shared/loader/Loader";
 import ClientSidebar from "../../../../components/shared/sidebar/ClientSidebar";
 import Pagination from "../../../../components/shared/pagination/Pagination";
+import { ADD_TO_CART } from "../../../../redux/slice/cartSlice";
+import {
+  fetchProducts,
+  filterProducts,
+  selectProducts,
+  selectIsFetchLoading,
+  selectIsFilterLoading,
+  selectFilteredProducts,
+  searchProducts,
+  selectSearchedProducts,
+  selectPagination,
+  selectFilters,
+} from "../../../../redux/slice/productSlice";
 
 const ViewProducts = () => {
   //--------------states-------------
@@ -32,17 +39,22 @@ const ViewProducts = () => {
   const [page, setPage] = useState(1);
   const pageSize = 3;
   //--------------hooks--------------
+  const dispatch = useDispatch();
   const { data, isHookLoading, totalProducts } = useFetchCollection(
     "product",
     page,
     pageSize
   );
-  console.log(data);
-  const filteredProducts = useSelector(selectFilteredProducts);
-  const dispatch = useDispatch();
   const products = useSelector(selectProducts);
-
+  const searchedProducts = useSelector(selectSearchedProducts);
+  const filteredProducts = useSelector(selectFilteredProducts);
+  const isFetchLoading = useSelector(selectIsFetchLoading);
+  const isFilterLoading = useSelector(selectIsFilterLoading);
+  // console.log(filteredProducts);
   //------------functions------------
+  const dispatchFilterProduct = (category, priceRange) => {
+    dispatch(filterProducts(category, priceRange));
+  };
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
@@ -59,16 +71,14 @@ const ViewProducts = () => {
 
   //--------------effects-------------
   useEffect(() => {
-    dispatch(
-      STORE_PRODUCTS({
-        products: data,
-      })
-    );
-    //dispatch, data
+    dispatch(fetchProducts());
   }, [dispatch, data]);
+  useEffect(() => {
+    dispatch(filterProducts({ category: "Phone", price: "5000" }));
+  }, []);
   // ---------------------------------
   useEffect(() => {
-    dispatch(FILTER_BY_SEARCH({ products: products, search: search }));
+    dispatch(searchProducts(search));
   }, [search, dispatch, products]);
   // ---------------------------------
   useEffect(() => {
@@ -82,6 +92,7 @@ const ViewProducts = () => {
           setCatFilter={setCatFilter}
           priceFilter={priceFilter}
           setPriceFilter={setPriceFilter}
+          filterProductsFunc={dispatchFilterProduct}
         />
         <div>
           <div className={styles.searchAndSort}>
@@ -91,12 +102,12 @@ const ViewProducts = () => {
             />
             <Sort sort={sort} setSort={setSort} />
           </div>
-          {isHookLoading ? (
+          {isFetchLoading || isFilterLoading ? (
             <Loader />
           ) : (
             <div>
               <div className={styles.productGrid}>
-                {search || catFilter || priceFilter
+                {catFilter || priceFilter
                   ? filteredProducts?.map((product) => (
                       <ProductCard
                         key={product.id}
@@ -104,7 +115,15 @@ const ViewProducts = () => {
                         del={deleteProduct}
                       />
                     ))
-                  : data?.map((product) => (
+                  : searchedProducts?.length > 0
+                  ? searchedProducts?.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        del={deleteProduct}
+                      />
+                    ))
+                  : products?.map((product) => (
                       <ProductCard
                         key={product.id}
                         product={product}

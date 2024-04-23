@@ -9,7 +9,6 @@ import {
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { db } from "../../firebase/config";
-import { STORE_PRODUCTS } from "../../redux/slice/productSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify"; // Import the toast library
 

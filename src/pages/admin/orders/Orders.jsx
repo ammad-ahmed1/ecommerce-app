@@ -3,7 +3,15 @@ import styles from "./Orders.module.scss";
 import useFetchCollection from "../../../custom-hooks/useFetchCollection/useFetchCollection";
 import Loader from "../../../components/shared/loader/Loader";
 import { useSelector, useDispatch } from "react-redux";
-import { UPDATE_STATUS } from "../../../redux/slice/orderSlice";
+import {
+  fetchOrders,
+  updateOrderStatus,
+  UPDATE_STATUS,
+  selectOrders,
+  selectIsFetchLoading,
+  selectIsFilterLoading,
+  selectIsUpdateLoading,
+} from "../../../redux/slice/orderSlice";
 
 const Orders = () => {
   //----------states-------
@@ -13,21 +21,23 @@ const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   // ---------hooks---------
   const dispatch = useDispatch();
-  const { data, isHookLoading, totalProducts } = useFetchCollection(
-    "orders",
-    1,
-    200,
-    fetchTrigger
-  );
+  const orders = useSelector(selectOrders);
+  const isFetchLoading = useSelector(selectIsFetchLoading);
+  const isUpdateLoading = useSelector(selectIsUpdateLoading);
   // -------functions-------
 
   const handleUpdateOrder = (order) => {
-    dispatch(UPDATE_STATUS({ orderId: order?.id, newStatus: "completed" }));
-    setFetchTrigger(true);
+    if (order.status === "pending") {
+      dispatch(
+        updateOrderStatus({ orderId: order?.id, newStatus: "completed" })
+      );
+    } else {
+      dispatch(updateOrderStatus({ orderId: order?.id, newStatus: "pending" }));
+    }
+    console.log(orders);
+    // setFetchTrigger(!fetchTrigger);
   };
-  const handleDispatch = (product) => {
-    console.log(product);
-  };
+
   // Function to handle showing modal and setting selected order
   const handleViewOrder = (order) => {
     setSelectedOrder(order);
@@ -56,11 +66,19 @@ const Orders = () => {
   };
 
   // ---------effect--------
-  useEffect(() => {}, []);
+  // useEffect(() => {
+  //   dispatch(fetchOrders());
+  // }, [fetchTrigger]);
+  useEffect(() => {
+    dispatch(fetchOrders());
+  }, []);
+  // useEffect(() => {
+  //   dispatch(fetchOrders());
+  // }, [dispatch, fetchTrigger]);
 
   return (
     <div>
-      {isHookLoading ? (
+      {isFetchLoading || isUpdateLoading ? (
         <Loader />
       ) : (
         <div className={styles.tableContainer}>
@@ -79,7 +97,7 @@ const Orders = () => {
               </tr>
             </thead>
             <tbody>
-              {data.map((order) => (
+              {orders?.orders?.map((order) => (
                 <tr key={order.id}>
                   <td>{order.id}</td>
                   <td>{parseJSON(order.shippingDetail).city}</td>
@@ -99,7 +117,7 @@ const Orders = () => {
                   <td>
                     <input
                       type="checkbox"
-                      disabled={order?.status === "completed" ? true : false}
+                      // disabled={order?.status === "completed" ? true : false}
                       onClick={(e) => handleUpdateOrder(order)}
                       checked={order?.status === "completed" ? true : false}
                     />
@@ -136,7 +154,7 @@ const Orders = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {parseJSON(selectedOrder.products)?.map((product) => (
+                    {selectedOrder.products?.map((product) => (
                       <tr key={product.id}>
                         <td>{product.id}</td>
                         <td>{product.name}</td>

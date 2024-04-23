@@ -29,6 +29,8 @@ import ClientSidebar from "./components/shared/sidebar/ClientSidebar";
 import AddressForm from "./pages/checkout/address-form/AddressForm";
 import Checkout from "./pages/checkout/checkout/Checkout";
 import CheckoutSuccess from "./pages/checkout/checkout-success/CheckoutSuccess";
+import { messaging } from "./firebase/config";
+import { getMessaging, getToken, onMessage } from "@firebase/messaging";
 // import AddProductForm from "./pages/admin/products/add-products/AddProductForm";
 function AdminLayout({ children }) {
   // You can customize the sidebar here
@@ -59,6 +61,37 @@ function UserLayout({ children }) {
 function App() {
   const [isShowHeaderAndFooter, setIsShowHeaderAndFooter] = useState(false);
   const location = useLocation();
+  const setupNotifications = async () => {
+    try {
+      // Request permission for notifications
+      const permission = await Notification.requestPermission();
+
+      if (permission === "granted") {
+        console.log("Notification permission granted.");
+        // Get the FCM token
+        const token = await getToken(messaging, {
+          vapidKey:
+            "BLjZbAVO_y6qjs9foTovJ4Zey_LlscwooyEQrgO47cCIMdQ9awkCkaWxaqTJG91KM7c1zCLW4FCoDGgxoTPmESc",
+        });
+        console.log("FCM Token:", token);
+      } else {
+        console.log("Notification permission denied.");
+      }
+      // Handle foreground notifications
+      console.log("entering onMessage");
+
+      onMessage(messaging, (payload) => {
+        console.log("Foreground Message:", payload);
+        // Handle the notification or update your UI
+      });
+    } catch (error) {
+      console.error("Error setting up notifications:", error);
+    }
+  };
+  useEffect(() => {
+    setupNotifications();
+  }, []);
+
   useEffect(() => {
     const loc = window.location.pathname;
     if (

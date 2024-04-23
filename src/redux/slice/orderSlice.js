@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
+import { current } from "@reduxjs/toolkit";
 import { db } from "../../firebase/config";
 import {
   Timestamp,
@@ -18,6 +19,7 @@ const initialState = {
   ordersByEmail: [],
   isFetchLoading: false,
   isFilterLoading: false,
+  isUpdateLoading: false,
   pendingOrders: [],
   completedOrders: [],
   filteredOrders: [],
@@ -47,11 +49,28 @@ export const fetchOrders = createAsyncThunk("orders/fetchOrders", async () => {
       id: doc.id,
       ...doc.data(),
     }));
+    console.log(orders);
     return orders;
   } catch (error) {
     return Promise.reject(error);
   }
 });
+export const updateOrderStatus = createAsyncThunk(
+  "orders/updateOrderStatus",
+  async ({ orderId, newStatus }) => {
+    try {
+      console.log(orderId, newStatus);
+      const orderRef = doc(db, "orders", orderId);
+      await updateDoc(orderRef, {
+        status: newStatus,
+        updatedAt: Timestamp.now().toDate(),
+      });
+      toast.success("Order status updated successfully");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
+);
 export const filterOrders = createAsyncThunk(
   "orders/filterOrders",
   async (status) => {
@@ -70,11 +89,13 @@ export const filterOrders = createAsyncThunk(
     }
   }
 );
-export const getOrdersByEmail = createAsyncThunk(
-  "orders/getOrderByEmail",
+export const fetchOrdersByEmail = createAsyncThunk(
+  "orders/fetchOrdersByEmail",
   async (userEmail) => {
-    console.log(userEmail, ".....................email");
+    console.log("I am called");
+    console.log(userEmail);
     try {
+      console.log("ehll");
       const querySnapshot = await getDocs(
         query(collection(db, "orders"), where("userEmail", "==", userEmail))
       );
@@ -82,8 +103,10 @@ export const getOrdersByEmail = createAsyncThunk(
         id: doc.id,
         ...doc.data(),
       }));
+      console.log(current(userEmail));
       return orders;
     } catch (error) {
+      console.log(error);
       return Promise.reject(error);
     }
   }
@@ -108,59 +131,29 @@ const orderSlice = createSlice({
         toast.error(error.message);
       }
     },
-    UPDATE_STATUS: async (state, action) => {
-      const { orderId, newStatus } = action.payload;
-      try {
-        const orderRef = doc(db, "orders", orderId);
-        await updateDoc(orderRef, {
-          status: newStatus,
-          updatedAt: Timestamp.now().toDate(),
-        });
-        toast.success("Order status updated successfully");
-      } catch (error) {
-        toast.error(error.message);
-      }
-    },
-
-    FILTER_ORDERS: async (state, action) => {
-      const { status } = action.payload;
-      state.isFilterLoading = true;
-      try {
-        const querySnapshot = await getDocs(
-          query(collection(db, "orders"), where("status", "==", status))
-        );
-        state.filteredOrders = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-      } catch (error) {
-        toast.error(error.message);
-      }
-      state.isFilterLoading = false;
-    },
   },
   extraReducers: (builder) => {
     builder
       // ----------fetch----------
       .addCase(fetchOrders.pending, (state) => {
-        state.loading = true;
+        state.isFetchLoading = true;
         state.error = null;
       })
       .addCase(fetchOrders.fulfilled, (state, action) => {
-        state.loading = false;
+        state.isFetchLoading = false;
         state.orders = action.payload;
       })
       .addCase(fetchOrders.rejected, (state, action) => {
-        state.loading = false;
+        state.isFetchLoading = false;
         state.error = action.error.message;
       })
       // ----------filter----------
       .addCase(filterOrders.pending, (state) => {
-        state.loading = true;
+        state.isFilterLoading = true;
         state.error = null;
       })
       .addCase(filterOrders.fulfilled, (state, action) => {
-        state.loading = false;
+        state.isFilterLoading = false;
         if (action.payload[1] === "pending") {
           state.pendingOrders = action.payload[0];
         } else if (action.payload[1] === "completed") {
@@ -170,20 +163,32 @@ const orderSlice = createSlice({
         state.filteredOrders = action.payload[0];
       })
       .addCase(filterOrders.rejected, (state, action) => {
-        state.loading = false;
+        state.isFilterLoading = false;
+        state.error = action.error.message;
+      })
+      // ----------update----------
+      .addCase(updateOrderStatus.pending, (state) => {
+        state.isUpdateLoading = true;
+        state.error = null;
+      })
+      .addCase(updateOrderStatus.fulfilled, (state, action) => {
+        state.isUpdateLoading = false;
+        state.orders = action.payload;
+      })
+      .addCase(updateOrderStatus.rejected, (state, action) => {
+        state.isUpdateLoading = false;
         state.error = action.error.message;
       });
     // ---------fetch by email ---------
-    builder.addCase(getOrdersByEmail.pending, (state) => {
+    builder.addCase(fetchOrdersByEmail.pending, (state) => {
       state.isFetchLoading = true; // Assuming you want to show loading state
       state.error = null;
     });
-    builder.addCase(getOrdersByEmail.fulfilled, (state, action) => {
+    builder.addCase(fetchOrdersByEmail.fulfilled, (state, action) => {
       state.isFetchLoading = false;
-      console.log(action.payload, ".................orders email");
       state.ordersByEmail = action.payload; // Update orders state with retrieved orders
     });
-    builder.addCase(getOrdersByEmail.rejected, (state, action) => {
+    builder.addCase(fetchOrdersByEmail.rejected, (state, action) => {
       state.isFetchLoading = false;
       state.error = action.error.message;
       toast.error("Error fetching orders"); // Handle error with toast notification
@@ -197,6 +202,7 @@ export const selectOrders = (state) => state.order;
 export const selectIsFetchLoading = (state) => state.order.isFetchLoading;
 export const selectFilteredOrders = (state) => state.order.filteredOrders;
 export const selectIsFilterLoading = (state) => state.order.isFilterLoading;
+export const selectIsUpdateLoading = (state) => state.order.isUpdateLoading;
 export const selectPendingOrders = (state) => state.order.pendingOrders;
 export const selectCompletedOrders = (state) => state.order.completedOrders;
 export const selectOrdersByEmail = (state) => state.order.ordersByEmail;

@@ -16,6 +16,7 @@ const ClientSidebar = ({
   setCatFilter,
   priceFilter,
   setPriceFilter,
+  filterProductsFunc,
 }) => {
   // --------hooks-----------
   const products = useSelector(selectProducts);
@@ -33,35 +34,42 @@ const ClientSidebar = ({
   const handleTabChange = (tab) => {
     setActiveTab(tab);
   };
+  const handleFilterProducts = (category, priceRange) => {
+    filterProductsFunc({ category: category, price: priceRange });
+  };
   const handleCategoryChange = (category) => {
-    if (category === "laptop") {
+    if (category === "Laptop") {
       setILaptopChecked(!isLaptopChecked);
       setIsElectronicChecked(false);
       setIsFashionChecked(false);
       setIsPhoneChecked(false);
       setCatFilter(category);
-      dispatch(FILTER_BY_CATEGORY({ products, category }));
-    } else if (category === "electronics") {
+      handleFilterProducts(category, priceRange);
+      //dispatch(FILTER_BY_CATEGORY({ products, category }));
+    } else if (category === "Electronics") {
       setIsElectronicChecked(!isElectronicChecked);
       setILaptopChecked(false);
       setIsFashionChecked(false);
       setIsPhoneChecked(false);
       setCatFilter(category);
-      dispatch(FILTER_BY_CATEGORY({ products, category }));
-    } else if (category === "fashion") {
+      handleFilterProducts(category, priceRange);
+      //(FILTER_BY_CATEGORY({ products, category }));
+    } else if (category === "Clothing") {
       setIsFashionChecked(!isFashionChecked);
       setIsElectronicChecked(false);
       setILaptopChecked(false);
       setIsPhoneChecked(false);
       setCatFilter(category);
-      dispatch(FILTER_BY_CATEGORY({ products, category: "Clothing" }));
-    } else if (category === "phone") {
+      handleFilterProducts(category, priceRange);
+      //dispatch(FILTER_BY_CATEGORY({ products, category: "Clothing" }));
+    } else if (category === "Phone") {
       setIsPhoneChecked(!isPhoneChecked);
       setIsFashionChecked(false);
       setIsElectronicChecked(false);
       setILaptopChecked(false);
       setCatFilter(category);
-      dispatch(FILTER_BY_CATEGORY({ products, category }));
+      //dispatch(FILTER_BY_CATEGORY({ products, category }));
+      handleFilterProducts(category, priceRange);
     } else {
     }
   };
@@ -112,7 +120,7 @@ const ClientSidebar = ({
                 id="laptop"
                 name="laptop"
                 checked={isLaptopChecked}
-                onChange={() => handleCategoryChange("laptop")}
+                onChange={() => handleCategoryChange("Laptop")}
               />
               <label htmlFor="laptop">Laptop</label>
             </li>
@@ -122,7 +130,7 @@ const ClientSidebar = ({
                 id="electronics"
                 name="electronics"
                 checked={isElectronicChecked}
-                onChange={() => handleCategoryChange("electronics")}
+                onChange={() => handleCategoryChange("Electronics")}
               />
               <label htmlFor="electronics">Electronics</label>
             </li>
@@ -132,7 +140,7 @@ const ClientSidebar = ({
                 id="fashion"
                 name="fashion"
                 checked={isFashionChecked}
-                onChange={() => handleCategoryChange("fashion")}
+                onChange={() => handleCategoryChange("Clothing")}
               />
               <label htmlFor="fashion">Fashion</label>
             </li>
@@ -142,7 +150,7 @@ const ClientSidebar = ({
                 id="phone"
                 name="phone"
                 checked={isPhoneChecked}
-                onChange={() => handleCategoryChange("phone")}
+                onChange={() => handleCategoryChange("Phone")}
               />
               <label htmlFor="phone">Phone</label>
             </li>

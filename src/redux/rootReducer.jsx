@@ -8,7 +8,7 @@ import orderSlice from "./slice/orderSlice";
 
 export const rootReducer = combineReducers({
   auth: authSlice,
-  product: productSlice,
+  products: productSlice,
   filter: filterSlice,
   cart: cartSlice,
   checkout: checkoutSlice,

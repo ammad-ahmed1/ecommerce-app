@@ -4,21 +4,22 @@ import { useSelector, useDispatch } from "react-redux";
 import { selectEmail } from "../../redux/slice/authSlice";
 import Loader from "../../components/shared/loader/Loader";
 import {
-  getOrdersByEmail,
   selectOrdersByEmail,
   selectIsFetchLoading,
+  fetchOrdersByEmail,
 } from "../../redux/slice/orderSlice";
 
 const OrderHistory = () => {
   // --------states----------
-
   const [showModal, setShowModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   // --------hooks-----------
   const dispatch = useDispatch();
   const userEmail = useSelector(selectEmail);
   const ordersByEmail = useSelector(selectOrdersByEmail);
-  console.log(ordersByEmail);
+  const isFetchLoading = useSelector(selectIsFetchLoading);
+
+  console.log(userEmail);
   // -------functions--------
   const handleViewOrder = (order) => {
     setSelectedOrder(order);
@@ -27,11 +28,11 @@ const OrderHistory = () => {
 
   // --------effect----------
   useEffect(() => {
-    dispatch(getOrdersByEmail(userEmail));
+    dispatch(fetchOrdersByEmail(userEmail));
   }, []);
   return (
     <div>
-      {!selectIsFetchLoading ? (
+      {isFetchLoading ? (
         <Loader />
       ) : (
         <div className={styles.tableContainer}>
@@ -50,17 +51,19 @@ const OrderHistory = () => {
               </tr>
             </thead>
             <tbody>
+              {" "}
+              z
               {ordersByEmail?.map((order) => (
                 <tr key={order.id}>
                   <td>{order.id}</td>
-                  <td>{parseJSON(order.shippingDetail).city}</td>
-                  <td>{parseJSON(order.shippingDetail).address}</td>
+                  <td>{order.shippingDetail.city}</td>
+                  <td>{order.shippingDetail.address}</td>
                   <td>
-                    {parseJSON(order.shippingDetail).firstName}{" "}
-                    {parseJSON(order.shippingDetail).lastName}
+                    {order.shippingDetail.firstName}{" "}
+                    {order.shippingDetail.lastName}
                   </td>
-                  <td>{parseJSON(order.shippingDetail).email}</td>
-                  <td>{parseJSON(order.shippingDetail).zip}</td>
+                  <td>{order.shippingDetail.email}</td>
+                  <td>{order.shippingDetail.zip}</td>
                   <td>{order?.status}</td>
                   <td>
                     <button onClick={() => handleViewOrder(order)}>
