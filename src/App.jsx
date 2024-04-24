@@ -31,6 +31,8 @@ import Checkout from "./pages/checkout/checkout/Checkout";
 import CheckoutSuccess from "./pages/checkout/checkout-success/CheckoutSuccess";
 import { messaging } from "./firebase/config";
 import { getMessaging, getToken, onMessage } from "@firebase/messaging";
+import { selectOrders, selectOrdersByEmail } from "./redux/slice/orderSlice";
+
 // import AddProductForm from "./pages/admin/products/add-products/AddProductForm";
 function AdminLayout({ children }) {
   // You can customize the sidebar here
@@ -61,36 +63,56 @@ function UserLayout({ children }) {
 function App() {
   const [isShowHeaderAndFooter, setIsShowHeaderAndFooter] = useState(false);
   const location = useLocation();
-  const setupNotifications = async () => {
-    try {
-      // Request permission for notifications
-      const permission = await Notification.requestPermission();
+  const orders = useSelector(selectOrders);
+  const ordersByEmail = useSelector(selectOrdersByEmail);
+  const notificationTitle = "New Message";
+  const notificationBody = "You have a new message!";
+  const customMessage = "This is a custom message!";
 
-      if (permission === "granted") {
-        console.log("Notification permission granted.");
-        // Get the FCM token
-        const token = await getToken(messaging, {
-          vapidKey:
-            "BLjZbAVO_y6qjs9foTovJ4Zey_LlscwooyEQrgO47cCIMdQ9awkCkaWxaqTJG91KM7c1zCLW4FCoDGgxoTPmESc",
-        });
-        console.log("FCM Token:", token);
-      } else {
-        console.log("Notification permission denied.");
-      }
-      // Handle foreground notifications
-      console.log("entering onMessage");
+  // const setupNotifications = async (title, body) => {
+  //   try {
+  //     // Request permission for notifications
+  //     const permission = await Notification.requestPermission();
 
-      onMessage(messaging, (payload) => {
-        console.log("Foreground Message:", payload);
-        // Handle the notification or update your UI
-      });
-    } catch (error) {
-      console.error("Error setting up notifications:", error);
-    }
-  };
+  //     if (permission === "granted") {
+  //       console.log("Notification permission granted.");
+  //       // Get the FCM token
+  //       const token = await getToken(messaging, {
+  //         vapidKey:
+  //           "BLjZbAVO_y6qjs9foTovJ4Zey_LlscwooyEQrgO47cCIMdQ9awkCkaWxaqTJG91KM7c1zCLW4FCoDGgxoTPmESc",
+  //       });
+  //       console.log("FCM Token:", token);
+  //       // const title = "Shop From Home";
+  //       // const body = "This is the notification body";
+  //       new Notification(title, {
+  //         body: body,
+  //         icon: "/favicons/android-chrome-512x512.png", // You can specify the icon for the notification
+  //       });
+  //     } else {
+  //       console.log("Notification permission denied.");
+  //     }
+  //     // Handle foreground notifications
+  //     console.log("entering onMessage");
+
+  //     onMessage(messaging, (payload) => {
+  //       console.log("Foreground Message:", payload); // Extract information from the payload
+
+  //       // Handle the notification or update your UI
+  //       const { title, body } = payload.notification;
+
+  //       // Show the notification to the user using browser's built-in notification API
+  //       new Notification(title, {
+  //         body: body,
+  //         icon: "/path/to/icon.png", // You can specify the icon for the notification
+  //       });
+  //     });
+  //   } catch (error) {
+  //     console.error("Error setting up notifications:", error);
+  //   }
+  // };
   useEffect(() => {
-    setupNotifications();
-  }, []);
+    // setupNotifications();
+  }, [orders]);
 
   useEffect(() => {
     const loc = window.location.pathname;
@@ -107,6 +129,9 @@ function App() {
   }, [location?.pathname]);
   return (
     <div style={{ margin: "20px" }}>
+      <button onClick={(e) => setupNotifications()}>
+        Click me for notification
+      </button>
       <ToastContainer />
       {isShowHeaderAndFooter && <Header />}
 

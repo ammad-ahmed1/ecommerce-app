@@ -2,17 +2,20 @@ import React, { useState, useEffect } from "react";
 import styles from "./Orders.module.scss";
 import useFetchCollection from "../../../custom-hooks/useFetchCollection/useFetchCollection";
 import Loader from "../../../components/shared/loader/Loader";
+import { getMessaging, getToken, onMessage } from "@firebase/messaging";
+import { messaging } from "../../../firebase/config";
 import { useSelector, useDispatch } from "react-redux";
 import {
   fetchOrders,
+  // updateOrderApi,
   updateOrderStatus,
   UPDATE_STATUS,
   selectOrders,
   selectIsFetchLoading,
   selectIsFilterLoading,
   selectIsUpdateLoading,
+  selectUpdateOrderApi,
 } from "../../../redux/slice/orderSlice";
-
 const Orders = () => {
   //----------states-------
   // State to manage modal visibility and selected order
@@ -24,8 +27,8 @@ const Orders = () => {
   const orders = useSelector(selectOrders);
   const isFetchLoading = useSelector(selectIsFetchLoading);
   const isUpdateLoading = useSelector(selectIsUpdateLoading);
+  const updateOrderApi = useSelector(selectUpdateOrderApi);
   // -------functions-------
-
   const handleUpdateOrder = (order) => {
     if (order.status === "pending") {
       dispatch(
@@ -34,7 +37,6 @@ const Orders = () => {
     } else {
       dispatch(updateOrderStatus({ orderId: order?.id, newStatus: "pending" }));
     }
-    console.log(orders);
     // setFetchTrigger(!fetchTrigger);
   };
 
@@ -64,7 +66,47 @@ const Orders = () => {
     }
     return total;
   };
+  const setupNotifications = async (title, body) => {
+    try {
+      // Request permission for notifications
+      const permission = await Notification.requestPermission();
 
+      if (permission === "granted") {
+        console.log("Notification permission granted.");
+        // Get the FCM token
+        const token = await getToken(messaging, {
+          vapidKey:
+            "BLjZbAVO_y6qjs9foTovJ4Zey_LlscwooyEQrgO47cCIMdQ9awkCkaWxaqTJG91KM7c1zCLW4FCoDGgxoTPmESc",
+        });
+        console.log("FCM Token:", token);
+        // const title = "Shop From Home";
+        // const body = "This is the notification body";
+        new Notification(title, {
+          body: body,
+          icon: "/favicons/android-chrome-512x512.png", // You can specify the icon for the notification
+        });
+      } else {
+        console.log("Notification permission denied.");
+      }
+      // Handle foreground notifications
+      console.log("entering onMessage");
+
+      onMessage(messaging, (payload) => {
+        console.log("Foreground Message:", payload); // Extract information from the payload
+
+        // Handle the notification or update your UI
+        const { title, body } = payload.notification;
+
+        // Show the notification to the user using browser's built-in notification API
+        new Notification(title, {
+          body: body,
+          icon: "/path/to/icon.png", // You can specify the icon for the notification
+        });
+      });
+    } catch (error) {
+      console.error("Error setting up notifications:", error);
+    }
+  };
   // ---------effect--------
   // useEffect(() => {
   //   dispatch(fetchOrders());
@@ -72,6 +114,12 @@ const Orders = () => {
   useEffect(() => {
     dispatch(fetchOrders());
   }, []);
+  useEffect(() => {
+    setupNotifications(
+      "Shop From Home",
+      `Your order id: ${updateOrderApi?.response?.id} status has been updated`
+    );
+  }, [updateOrderApi]);
   // useEffect(() => {
   //   dispatch(fetchOrders());
   // }, [dispatch, fetchTrigger]);

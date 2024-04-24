@@ -17,6 +17,7 @@ import {
 const initialState = {
   orders: [],
   ordersByEmail: [],
+  updateOrderApi: null,
   isFetchLoading: false,
   isFilterLoading: false,
   isUpdateLoading: false,
@@ -59,13 +60,14 @@ export const updateOrderStatus = createAsyncThunk(
   "orders/updateOrderStatus",
   async ({ orderId, newStatus }) => {
     try {
-      console.log(orderId, newStatus);
       const orderRef = doc(db, "orders", orderId);
       await updateDoc(orderRef, {
         status: newStatus,
         updatedAt: Timestamp.now().toDate(),
       });
       toast.success("Order status updated successfully");
+
+      return orderRef;
     } catch (error) {
       toast.error(error.message);
     }
@@ -168,15 +170,23 @@ const orderSlice = createSlice({
       })
       // ----------update----------
       .addCase(updateOrderStatus.pending, (state) => {
-        state.isUpdateLoading = true;
+        state.updateOrderApi = { loading: true };
         state.error = null;
       })
       .addCase(updateOrderStatus.fulfilled, (state, action) => {
-        state.isUpdateLoading = false;
-        state.orders = action.payload;
+        state?.orders.map((order) => {
+          if (action?.meta?.arg?.orderId === order.id) {
+            order.status = action?.meta?.arg?.newStatus;
+          }
+        });
+        state.updateOrderApi = {
+          loading: false,
+          response: action.payload,
+        };
       })
       .addCase(updateOrderStatus.rejected, (state, action) => {
-        state.isUpdateLoading = false;
+        // state.isUpdateLoading = false;
+        state.updateOrderApi = { loading: true };
         state.error = action.error.message;
       });
     // ---------fetch by email ---------
@@ -206,4 +216,5 @@ export const selectIsUpdateLoading = (state) => state.order.isUpdateLoading;
 export const selectPendingOrders = (state) => state.order.pendingOrders;
 export const selectCompletedOrders = (state) => state.order.completedOrders;
 export const selectOrdersByEmail = (state) => state.order.ordersByEmail;
+export const selectUpdateOrderApi = (state) => state.order.updateOrderApi;
 export default orderSlice.reducer;
