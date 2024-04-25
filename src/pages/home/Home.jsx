@@ -14,7 +14,7 @@ const Home = () => {
       <div className={styles.grid_container}>
         <div className={styles.grid_item}>
           <img
-            src="/public/homepage/fashion.jpg"
+            src="/homepage/fashion.jpg"
             alt="Image 1"
             className={styles.image}
           />
@@ -22,7 +22,7 @@ const Home = () => {
         </div>
         <div className={styles.grid_item}>
           <img
-            src="/public/homepage/electronics.jpeg"
+            src="/homepage/electronics.jpeg"
             alt="Image 2"
             className={styles.image}
           />
@@ -30,7 +30,7 @@ const Home = () => {
         </div>
         <div className={styles.grid_item}>
           <img
-            src="/public/homepage/mobiles.jpg"
+            src="/homepage/mobiles.jpg"
             alt="Image 1"
             className={styles.image}
           />
@@ -38,7 +38,7 @@ const Home = () => {
         </div>
         <div className={styles.grid_item}>
           <img
-            src="/public/homepage/laptops.avif"
+            src="/homepage/laptops.avif"
             alt="Image 2"
             className={styles.image}
           />

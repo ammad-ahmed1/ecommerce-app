@@ -50,7 +50,6 @@ export const fetchOrders = createAsyncThunk("orders/fetchOrders", async () => {
       id: doc.id,
       ...doc.data(),
     }));
-    console.log(orders);
     return orders;
   } catch (error) {
     return Promise.reject(error);
