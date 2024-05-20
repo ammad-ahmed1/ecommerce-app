@@ -18,7 +18,7 @@ import {
   TOTAL_BILL,
   selectCartTotalAmount,
 } from "../../../redux/slice/cartSlice";
-import { CREATE_ORDERS } from "../../../redux/slice/orderSlice";
+import { createOrder } from "../../../redux/slice/orderSlice";
 
 const CheckoutForm = ({ clientSecret }) => {
   //--------------hooks---------------
@@ -49,30 +49,12 @@ const CheckoutForm = ({ clientSecret }) => {
     }
   }, [stripe]);
   //-------------functions------------
-  const createOrder = async () => {
-    try {
-      console.log("creating-order");
-      setIsLoading(true);
-
-      const docRef = await addDoc(collection(db, "orders"), {
-        products: products,
-        shippingDetail: shippingDetail,
-        userEmail: userEmail,
-        createdAt: Timestamp.now().toDate(),
-      });
-      toast.success("Order created succesfuly");
-      setIsLoading(false);
-    } catch (error) {
-      toast.error(error.message);
-      setIsLoading(false);
-    }
-  };
   const saveOrder = async () => {
     console.log("Save order!");
     // await createOrder();
     console.log(products, "....................bill");
     dispatch(
-      CREATE_ORDERS({
+      createOrder({
         products,
         shippingDetail,
         userEmail,
@@ -80,6 +62,7 @@ const CheckoutForm = ({ clientSecret }) => {
         createdAt: Timestamp.now().toDate(),
       })
     );
+    // );
     dispatch(CLEAR_CART());
     nav("/order-confirmed");
   };

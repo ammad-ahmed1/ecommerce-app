@@ -9,7 +9,6 @@ import {
   fetchOrders,
   // updateOrderApi,
   updateOrderStatus,
-  UPDATE_STATUS,
   selectOrders,
   selectIsFetchLoading,
   selectIsFilterLoading,

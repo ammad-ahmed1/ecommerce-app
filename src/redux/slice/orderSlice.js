@@ -18,6 +18,10 @@ const initialState = {
   orders: [],
   ordersByEmail: [],
   updateOrderApi: null,
+  fetchOrderApi: null,
+  orderByEmailApi: null,
+  filterOrderApi: null,
+  createOrderApi: null,
   isFetchLoading: false,
   isFilterLoading: false,
   isUpdateLoading: false,
@@ -30,12 +34,12 @@ export const createOrder = createAsyncThunk(
   async (orderData) => {
     try {
       const docRef = await addDoc(collection(db, "orders"), {
-        // products,
-        // shippingDetail,
-        // userEmail,
-        // status: "pending",
-        // bill,
-        // createdAt: Timestamp.now().toDate(),
+        products,
+        shippingDetail,
+        userEmail,
+        status: "pending",
+        bill,
+        createdAt: Timestamp.now().toDate(),
       });
       toast.success("Order created successfully");
     } catch (error) {}
@@ -115,29 +119,12 @@ export const fetchOrdersByEmail = createAsyncThunk(
 const orderSlice = createSlice({
   name: "order",
   initialState,
-  reducers: {
-    CREATE_ORDERS: async (state, action) => {
-      const { products, shippingDetail, userEmail, bill } = action.payload;
-      try {
-        const docRef = await addDoc(collection(db, "orders"), {
-          products,
-          shippingDetail,
-          userEmail,
-          status: "pending",
-          bill,
-          createdAt: Timestamp.now().toDate(),
-        });
-        toast.success("Order created successfully");
-      } catch (error) {
-        toast.error(error.message);
-      }
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       // ----------fetch----------
       .addCase(fetchOrders.pending, (state) => {
-        state.isFetchLoading = true;
+        state.loading = true;
         state.error = null;
       })
       .addCase(fetchOrders.fulfilled, (state, action) => {
@@ -150,21 +137,31 @@ const orderSlice = createSlice({
       })
       // ----------filter----------
       .addCase(filterOrders.pending, (state) => {
-        state.isFilterLoading = true;
-        state.error = null;
+        state.filterOrderApi = {
+          loading: false,
+          response: action.payload,
+        };
       })
       .addCase(filterOrders.fulfilled, (state, action) => {
         state.isFilterLoading = false;
         if (action.payload[1] === "pending") {
-          state.pendingOrders = action.payload[0];
+          state.filterOrderApi = {
+            loading: false,
+            response: action.payload[0],
+          };
+          // state.pendingOrders = action.payload[0];
         } else if (action.payload[1] === "completed") {
-          state.completedOrders = action.payload[0];
+          state.filterOrderApi = {
+            loading: false,
+            response: action.payload[1],
+          };
+          // state.completedOrders = action.payload[0];
         } else {
         }
         state.filteredOrders = action.payload[0];
       })
       .addCase(filterOrders.rejected, (state, action) => {
-        state.isFilterLoading = false;
+        state.filterOrderApi = { loading: false };
         state.error = action.error.message;
       })
       // ----------update----------
@@ -185,7 +182,7 @@ const orderSlice = createSlice({
       })
       .addCase(updateOrderStatus.rejected, (state, action) => {
         // state.isUpdateLoading = false;
-        state.updateOrderApi = { loading: true };
+        state.updateOrderApi = { loading: false };
         state.error = action.error.message;
       });
     // ---------fetch by email ---------
@@ -205,8 +202,6 @@ const orderSlice = createSlice({
   },
 });
 
-export const { CREATE_ORDERS, UPDATE_STATUS, FILTER_ORDERS } =
-  orderSlice.actions;
 export const selectOrders = (state) => state.order;
 export const selectIsFetchLoading = (state) => state.order.isFetchLoading;
 export const selectFilteredOrders = (state) => state.order.filteredOrders;
